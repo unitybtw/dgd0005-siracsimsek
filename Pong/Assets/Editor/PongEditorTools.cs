@@ -93,4 +93,14 @@ public static class PongEditorTools
             throw new InvalidOperationException("Pong QA build failed: " + result.summary.result);
         Debug.Log("[Pong] QA build succeeded.");
     }
+    [MenuItem("Pong/Export unitypackage")]
+    public static void ExportPackage()
+    {
+        string deliveryDir = Path.GetFullPath(Path.Combine(Application.dataPath, "../../delivery"));
+        Directory.CreateDirectory(deliveryDir);
+        string packagePath = Path.Combine(deliveryDir, "dgd0005-siracsimsek.unitypackage");
+        AssetDatabase.ExportPackage("Assets", packagePath, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+        Debug.Log("[Pong] Exported package to: " + packagePath);
+    }
 }
+
