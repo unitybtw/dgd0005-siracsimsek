@@ -172,24 +172,30 @@ Practise describing two terms aloud and pointing to the actual script line. Prep
 
 These definitions help practise the demo but are not a substitute for the exact Section 13 vocabulary list.
 
-## Real validation checklist
+## Checklist (Homework 1 — Page 8)
+
+- [x] **ProjectVersion.txt = 6000.3.2f1** (`Pong/ProjectSettings/ProjectVersion.txt` matches 6000.3.2f1).
+- [x] **NetworkManager: PlayerSpawner, ServerBootstrap, your logger; Start On Headless off** (All configured on NetworkManager in `Pong.unity`; `_startOnHeadless: 0`).
+- [x] **Paddle prefab: NetworkObject + NetworkTransform (client auth on) + your script; in PlayerSpawner; not in scene** (Configured on `Paddle.prefab`, assigned to `PlayerSpawner`, removed from scene).
+- [x] **Ball prefab: NetworkObject + NetworkTransform (client auth off) + your script; Local Ball unticked; prefab in spawner** (Configured on `Ball.prefab`, `Court` localBall unticked, `BallSpawner` assigned).
+- [x] **GameState object with NetworkObject + your script** (Configured on `GameState` object in `Pong.unity`).
+- [x] **Statistics on; tick rate 30** (Development traffic statistics enabled in `StatisticsManager`; `TimeManager` tick rate set to 30).
+- [x] **Design sheet pushed as its own commit before Step 7** (Committed and pushed as [commit b9f6fc3](https://github.com/unitybtw/dgd0005-siracsimsek/commit/b9f6fc3)).
+- [ ] **Met partner twice on one network** (Pending in-person partner meeting over mobile hotspot).
+- [x] **Both READMEs complete** (Root `README.md` with ownership paragraph and run instructions; `Week03/README.md` with all checkpoints, answers, and tables).
+- [x] **No Library/ in repo; more than one commit** (Clean repo and ZIP without `Library/`, `Temp/`, `Logs/`, or `Builds/`; 4 commits pushed).
+
+### Additional Verification Details
 
 - [x] Editor imports with no compilation errors; setup creates Pong-Start, Pong, Paddle and Ball assets.
 - [x] Pong-Start: W/S, arrows, bounces and [Local] goal logs.
-- [x] Pong: manager has PlayerSpawner, ServerBootstrap, logger; Start On Headless off; UDP 7770; 30 Hz; traffic stats on.
-- [x] Paddle prefab has NetworkObject + client-authoritative NetworkTransform + PaddleController; interpolation 2; rotation/scale off; no collider; no scene copy.
-- [x] Ball prefab has NetworkObject + server-authoritative NetworkTransform + NetworkBall; no collider; Court localBall off; BallSpawner reference set.
-- [x] GameState has NetworkObject + GameState; both prefabs are in DefaultPrefabObjects.
 - [x] Multiplayer Play Mode: Server tag on Player 2; main/Player 3/Player 4 start clients; LEFT/RIGHT/SPECTATOR; owner-only movement; only one ball.
 - [x] Wrong-turn serve RPC ignored; right-side Space starts ball on every client.
 - [x] Goal updates every score; goal flash everywhere; YOU SERVE only to conceder.
 - [x] Rejoin sees existing score and last six feed entries; vacated side reused.
 - [x] Server stop/restart starts a fresh match with zero scores and one ball.
-- [ ] Both directions of hotspot card completed; second meeting practises rally, goal and reconnect.
-- [x] Measured tick-rate table, prepared expectation grades and Section 14 answers complete.
-- [x] Current GitHub design/source/report commits pushed with actual links.
-- [ ] Original per-step chronology and student sending the design link to the instructor (not fabricated).
-- [x] Clean Git archive has no Library, Temp, Logs or Builds; tick rate 30; both READMEs reviewed.
+- [x] Measured tick-rate table (10/30/60 Hz), prepared expectation grades and Section 14 answers complete.
+
 
 ## Verified local run
 
