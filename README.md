@@ -1,0 +1,41 @@
+# Pong - Week 3 multiplayer assignment
+
+Unity **6000.3.2f1**, Universal 3D, FishNet's official **4.7.3** tag (release title **4.7.3R**), Tugboat UDP **7770**, tick rate **30**. No Mirror or Unity Netcode.
+
+Each player owns one spawned paddle and moves only that paddle using its owner guard and a client-authoritative NetworkTransform. Nobody on a client owns the ball or shared GameState: the server alone simulates the ball, authorizes serves and writes the scores. Everybody receives the same ball position, score, serving side and recent event feed; extra clients are spectators.
+
+## Run server and client (three lines)
+
+1. In Unity Hub, add `Pong/`, select 6000.3.2f1, open it and let packages/scripts import; the setup tool generates and opens `Assets/Scenes/Pong.unity` once.
+2. Press Play on the server laptop, click **Start Server**, then **Start Client**; its first client receives LEFT.
+3. On the guest laptop open the same scene, press Play, enter the server's hotspot IP and click **Start Client**; move with W/S or arrows and press Space on your serve.
+
+Two active players are required to serve. The ball starts grey; the LEFT player serves first. A goal gives the conceding side the next serve. Disconnecting a player pauses the rally and preserves the score while the server remains running. Reconnecting claims the first free side; existing spectators remain spectators.
+
+## Project contents
+
+- `Pong/Assets/Scripts/Starter/`: the supplied local game; the original `Starter 2/` files remain untouched. The project copy of Court uses a shared material/property block to avoid allocating a material for every repaint.
+- `Pong/Assets/Scripts/Network/`: ConnectionLogger, PaddleController, NetworkBall, BallSpawner and GameState.
+- `Pong/Assets/Scripts/Tools/`: replacement ConnectionHud and ServerBootstrap, because the course Tools folder was not supplied.
+- `Pong/Assets/Editor/PongProjectSetup.cs`: creates the local and network scenes, paddle/ball prefabs, manager, references and build scene on first successful Editor import. The menu **Pong > Create missing scenes and prefabs** can also run it. It preserves an existing Pong scene.
+- `Week03/README.md`: written answers and the remaining real measurement cards.
+- `PLAN.md`: the full implementation, validation and hand-in plan in Turkish.
+- `verification/`: static compiler evidence and remaining validation scope.
+
+## Dependencies and source
+
+FishNet is vendored under `Pong/Assets/FishNet/` from [the official 4.7.3 tag](https://github.com/FirstGearGames/FishNet/tree/4.7.3). Its upstream package metadata and FISHNET_VERSION constant still say 4.7.2; they have been left unchanged. The release title is [4.7.3R](https://github.com/FirstGearGames/FishNet/releases/tag/4.7.3). Its included license files apply. Unity packages are pinned in `Packages/manifest.json`, including Multiplayer Play Mode 2.0.2, Input System 1.20.1 and URP 17.3.0.
+
+Client-authoritative paddles intentionally follow the homework; a modified client can lie about speed/position. See [FishNet's official movement tutorial](https://github.com/FirstGearGames/FishNet-Documentation/blob/main/tutorials/getting-started/moving-your-player-around.md). The serve and score decisions remain server-authoritative.
+
+## Validation status
+
+Unity import and compilation now succeed in **6000.3.2f1**. The actual local/network scenes and prefab assets exist. The project is connected to **MCP for Unity v10.0.0** at `http://127.0.0.1:8080/mcp`. Start its local server with `tools/start_unity_mcp.sh`; the Editor connects automatically. Editor tools and QA instrumentation are excluded or inactive during ordinary gameplay.
+
+The old Input System 1.12.0 package used a removed BuildTarget enum. Multiplayer Play Mode 1.6.2 duplicated a command now built into Unity 6.3. They were replaced with compatible versions and the ServerBootstrap namespace/tag API was updated. Generated scene NetworkObjects now have valid SceneIds and active-state records; the setup/repair tools use FishNet's own serialization routines.
+
+Real local tests used a Unity Editor host and separate macOS Development-build clients: LEFT/RIGHT/SPECTATOR assignment, one ball per client, server-approved serve, replicated ball movement and goal/score, rejection of a wrong-turn serve, and a reconnect receiving the existing 1:0 score and last six events. See `verification/README.md` for exact scope and logs. The rendered host game was also inspected.
+
+Package Manager can still show invalid-signature warnings for some official Unity packages. Unity documents a certificate-validity bug in old Editors, fixed from 6000.3.7f1. The homework explicitly requires 6000.3.2f1, so that version is retained and signature checks are not disabled. This warning is separate from compilation; see [Unity's issue](https://issuetracker-mig.prd.it.unity3d.com/issues/package-signature-validation-unexpectedly-return-an-invalid-signature-status-if-the-validation-check-is-done-after-the-code-signing-certificate-validaty-range-has-passed).
+
+The repository is [unitybtw/dgd0005-siracsimsek](https://github.com/unitybtw/dgd0005-siracsimsek), created private. Week03 includes measured 10/30/60 Hz traffic, all Section 14 answers and Section 13 vocabulary from the supplied lecture notes. Native W/S/arrows/Space input and a fresh zero-score server restart were tested. Two physical laptops/hotspot and the partner connection cards remain pending because a second laptop was unavailable. The original per-step push chronology cannot be recreated; current commits record actual final preparation.

@@ -22,3 +22,9 @@
 *.opendb
 *.VC.db
 *.unitypackage
+# Local course source handouts and raw machine logs are not submission assets.
+Week*_Lecture*.pdf
+verification/**/*.log
+verification/*.log
+Starter 2/
+delivery/
