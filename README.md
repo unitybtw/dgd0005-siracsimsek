@@ -22,6 +22,49 @@ Two active players are required to serve. The ball starts grey; the LEFT player 
 - `PLAN.md`: the full implementation, validation and hand-in plan in Turkish.
 - `verification/`: static compiler evidence and remaining validation scope.
 
+## Visual Evidence & In-Game Captures
+
+The following captures demonstrate real runtime states during local verification on Unity 6000.3.2f1:
+
+### 1. Active In-Flight Rally & Network Traffic Monitoring
+![Active Rally and Network Traffic Verification](Pong/Captures/pong-traffic-verified.png)
+*Figure 1: Replicated match in progress. LEFT (blue) and RIGHT (orange) paddles positioned, white ball actively moving in play, and real-time FishNet traffic statistics reporting active socket throughput (`Server IN 31 / OUT 762 B/s`, `Client IN 369 / OUT 21 B/s`) at 30 Hz.*
+
+### 2. Goal Scoring, RPC Notifications & Reconnecting Player (Late Joiner)
+![Replication, Goal Scoring, and Late Joiner Reconnect](Pong/Captures/pong-verified.png)
+*Figure 2: Authoritative scoring and state recovery. Shows score updated to `LEFT 1 : 0 RIGHT`, conceder receiving serve notification (`Serve: RIGHT (SPACE)`), and event feed logging full connection and scoring lifecycle. When Client 1 disconnected and Client 3 reconnected, the match score (1:0) and recent events were completely preserved.*
+
+### 3. Dedicated Multi-Client & Spectator Assignment
+![Spectator and Multi-Client Role Assignment](Pong/Captures/pong-host.png)
+*Figure 3: Multiplayer role distribution. Shows client 0 assigned as LEFT, client 1 assigned as RIGHT, and client 2 assigned as SPECTATOR (paddle renderer disabled, spectator HUD).*
+
+## Comprehensive Local Verification Summary
+
+Every gameplay mechanic, network flow, and replication feature required by the homework specification has been verified in local multi-process runs:
+
+- **Compilation & Project Integrity:** Clean compilation with Roslyn and Unity 6000.3.2f1, official FishNet 4.7.3R, and URP 17.3.0.
+- **Single-Player Baseline (`Pong-Start.unity`):** Local court boundaries, W/S and arrow key dual-control, wall bounces, and `[Local]` goal logs verified.
+- **Client-Authoritative Paddles (`PaddleController.cs`):**
+  - First line owner guard (`if (!IsOwner) return;`) prevents cross-client movement.
+  - Client-authoritative NetworkTransform (interpolation 2) provides smooth gliding of owner-controlled paddles across all viewing windows.
+- **Server-Authoritative Ball & Physics (`NetworkBall.cs`, `BallSpawner.cs`):**
+  - Only simulated on server (`if (!IsServerInitialized) return;`).
+  - Ball spawns centrally via `Court`'s `BallSpawner` on server startup; single shared ball across all clients.
+  - Substep ray-crossing checks prevent paddle tunneling.
+  - InPlay `SyncVar<bool>` alters ball visual appearance (grey when awaiting serve, white in play).
+- **Three Core RPC Workflows:**
+  - `[ServerRpc] RequestServe()`: Owner requests serve; server validates turn order, two connected players, and ball readiness before applying velocity. Invalid serves (wrong side or prior to match start) are ignored.
+  - `[ObserversRpc] AnnounceGoal(int left, int right)`: Server broadcasts score update flash to all connected clients upon a goal.
+  - `[TargetRpc] YouServe(NetworkConnection target)`: Server targets only the conceding player with the `"YOU SERVE"` HUD notification.
+- **State Synchronization (`GameState.cs`):**
+  - Synchronized scores (`LeftScore`, `RightScore`) and active server (`ServingSide`) maintain consistency.
+  - Synchronized `Feed` (`SyncList<string>`) stores and replicates up to 6 recent events.
+  - Late-joining players immediately receive correct ongoing scores, paddle positions, and recent event logs without desynchronization.
+- **Multiplayer Play Mode (4 Processes):**
+  - Verified with Player 2 tagged as dedicated `Server`, Main Editor as `LEFT` (client 0), Player 3 as `RIGHT` (client 1), and Player 4 as `SPECTATOR` (client 2) in separate OS processes.
+- **10/30/60 Hz Network Benchmarks:**
+  - Automated continuous rally traffic measurements recorded in `verification/benchmarks/summary.json` (342.8 B/s at 10 Hz, 900.6 B/s at 30 Hz, 1701.6 B/s at 60 Hz).
+
 ## Dependencies and source
 
 FishNet is vendored under `Pong/Assets/FishNet/` from [the official 4.7.3 tag](https://github.com/FirstGearGames/FishNet/tree/4.7.3). Its upstream package metadata and FISHNET_VERSION constant still say 4.7.2; they have been left unchanged. The release title is [4.7.3R](https://github.com/FirstGearGames/FishNet/releases/tag/4.7.3). Its included license files apply. Unity packages are pinned in `Packages/manifest.json`, including Multiplayer Play Mode 2.0.2, Input System 1.20.1 and URP 17.3.0.

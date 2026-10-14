@@ -29,3 +29,5 @@ verification/*.log
 Starter 2/
 delivery/
 verification/*log*
+**/_Recovery/
+**/_Recovery.meta

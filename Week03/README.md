@@ -194,3 +194,20 @@ These definitions help practise the demo but are not a substitute for the exact 
 ## Verified local run
 
 An Editor host plus separate Development-build RIGHT/spectator clients passed the core replication/RPC checks; see `verification/results.json`. Owner movement and serve were driven with QA menu calls, not physical keyboard input. Reconnect retained 1:0 and six feed entries; a later targeted test also verified a new client keeps the existing paddle z position. Traffic counters are enabled and visibly nonzero. The physical-laptop cards remain pending. The tick-rate table and lecture answers are complete. Multiplayer Play Mode also verified Server-tagged Player 2 plus Main/Player 3/Player 4 roles in four separate processes.
+
+## Visual evidence and runtime captures
+
+The screenshots below provide direct visual proof of local multiplayer execution, active socket traffic monitoring, goal/RPC handling, and reconnect state recovery:
+
+### 1. Active Match Rally & Traffic Measurement
+![Active Rally and Traffic Measurement](../Pong/Captures/pong-traffic-verified.png)
+*Active rally in progress: white ball moving across the court, LEFT (blue) and RIGHT (orange) paddles positioned, and real-time socket statistics reporting `Server IN 31 / OUT 762 B/s`, `Client IN 369 / OUT 21 B/s` at 30 Hz.*
+
+### 2. Goal Replication, YOU SERVE TargetRpc & Reconnecting Player
+![Goal Replication and Reconnection](../Pong/Captures/pong-verified.png)
+*Score replication and state recovery: score updated to `LEFT 1 : 0 RIGHT`, conceder notified with `Serve: RIGHT (SPACE)`, and event feed tracking the full connection and scoring lifecycle. When a player disconnected and a new client connected, the match score (1:0) and recent feed entries were accurately preserved.*
+
+### 3. Spectator & 4-Player Role Distribution
+![Spectator and Multi-Client Roles](../Pong/Captures/pong-host.png)
+*Multiplayer role assignment: client 0 assigned to LEFT, client 1 assigned to RIGHT, and client 2 assigned to SPECTATOR (renderer disabled, spectator HUD).*
+
