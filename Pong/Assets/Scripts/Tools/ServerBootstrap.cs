@@ -26,6 +26,9 @@ public class ServerBootstrap : MonoBehaviour
 #endif
         if (server && InstanceFinder.NetworkManager != null)
             InstanceFinder.ServerManager.StartConnection();
+        int addrFlag = Array.IndexOf(args, "-pongAddress");
+        if (addrFlag >= 0 && addrFlag + 1 < args.Length && InstanceFinder.TransportManager != null)
+            InstanceFinder.TransportManager.Transport.SetClientAddress(args[addrFlag + 1].Trim());
         if (Array.IndexOf(Environment.GetCommandLineArgs(), "-pongClient") >= 0)
             InstanceFinder.ClientManager.StartConnection();
     }

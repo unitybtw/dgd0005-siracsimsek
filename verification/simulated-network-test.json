@@ -1,0 +1,50 @@
+{
+  "network_mode": "Simulated multi-endpoint across physical LAN IP stack",
+  "lan_ip": "192.168.1.6",
+  "port": 7770,
+  "tick_rate": 30,
+  "endpoints": {
+    "host_left": {
+      "local_side": 0,
+      "role": "LEFT (blue)",
+      "paddles_tracked": 3,
+      "balls": 1,
+      "traffic_server_out_Bps": 935.9
+    },
+    "remote_guest_right": {
+      "local_side": 1,
+      "role": "RIGHT (orange)",
+      "endpoint_ip": "192.168.1.6",
+      "connected_successfully": true,
+      "paddles_tracked": 3,
+      "balls": 1
+    },
+    "spectator_guest": {
+      "local_side": 2,
+      "role": "SPECTATOR",
+      "endpoint_ip": "192.168.1.6",
+      "connected_successfully": true,
+      "renderer_disabled": true
+    },
+    "late_joiner_reconnection": {
+      "local_side": 1,
+      "reclaimed_side": "RIGHT",
+      "connected_successfully": true,
+      "score_preserved": [
+        0,
+        0
+      ],
+      "feed_events_replicated": 6,
+      "balls": 1
+    }
+  },
+  "verifications": {
+    "multi_endpoint_socket_communication": true,
+    "left_assigned_0": true,
+    "guest_assigned_right_1": true,
+    "spectator_assigned_2": true,
+    "single_ball_replicated": true,
+    "late_joiner_reclaims_vacated_slot": true,
+    "late_joiner_preserves_score_and_feed": true
+  }
+}

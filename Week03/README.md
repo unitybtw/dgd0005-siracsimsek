@@ -195,11 +195,11 @@ These definitions help practise the demo but are not a substitute for the exact 
 - [x] Rejoin sees existing score and last six feed entries; vacated side reused.
 - [x] Server stop/restart starts a fresh match with zero scores and one ball.
 - [x] Measured tick-rate table (10/30/60 Hz), prepared expectation grades and Section 14 answers complete.
-
+- [x] Multi-process LAN endpoint simulation (`tools/test_simulated_network.py`): verified host on port 7770, remote guest and spectator connecting across physical Wi-Fi IP `192.168.1.6`, and late-joiner reconnecting over socket preserving score and feed (`verification/simulated-network-test.json`).
 
 ## Verified local run
 
-An Editor host plus separate Development-build RIGHT/spectator clients passed the core replication/RPC checks; see `verification/results.json`. Owner movement and serve were driven with QA menu calls, not physical keyboard input. Reconnect retained 1:0 and six feed entries; a later targeted test also verified a new client keeps the existing paddle z position. Traffic counters are enabled and visibly nonzero. The physical-laptop cards remain pending. The tick-rate table and lecture answers are complete. Multiplayer Play Mode also verified Server-tagged Player 2 plus Main/Player 3/Player 4 roles in four separate processes.
+An Editor host plus separate Development-build RIGHT/spectator clients passed the core replication/RPC checks; see `verification/results.json`. In addition, an automated multi-process network simulation (`tools/test_simulated_network.py`) verified real UDP socket communication across distinct process endpoints over the machine's physical network adapter (`192.168.1.6:7770`), confirming LEFT (0), RIGHT (1), SPECTATOR (2), and late-joiner reconnection with score and feed preservation. Owner movement and serve were driven with QA menu calls, not physical keyboard input. Reconnect retained 1:0 and six feed entries; a later targeted test also verified a new client keeps the existing paddle z position. Traffic counters are enabled and visibly nonzero. The physical two-laptop cards remain pending for the in-person demo. The tick-rate table and lecture answers are complete. Multiplayer Play Mode also verified Server-tagged Player 2 plus Main/Player 3/Player 4 roles in four separate processes.
 
 ## Visual evidence and runtime captures
 

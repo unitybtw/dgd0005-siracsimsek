@@ -64,6 +64,11 @@ Every gameplay mechanic, network flow, and replication feature required by the h
   - Verified with Player 2 tagged as dedicated `Server`, Main Editor as `LEFT` (client 0), Player 3 as `RIGHT` (client 1), and Player 4 as `SPECTATOR` (client 2) in separate OS processes.
 - **10/30/60 Hz Network Benchmarks:**
   - Automated continuous rally traffic measurements recorded in `verification/benchmarks/summary.json` (342.8 B/s at 10 Hz, 900.6 B/s at 30 Hz, 1701.6 B/s at 60 Hz).
+- **Simulated Multi-Machine LAN Endpoint Verification (`tools/test_simulated_network.py`):**
+  - Host process binds Tugboat to UDP port 7770 on physical Wi-Fi IP `192.168.1.6`.
+  - Remote guest process connects explicitly over `192.168.1.6:7770`, routing through the physical network interface stack rather than loopback, and receives role `RIGHT (orange)`.
+  - Separate spectator process connects over `192.168.1.6:7770` and is assigned `SPECTATOR` (renderer disabled, spectator HUD).
+  - Mid-match disconnect & reconnect verified: guest process is terminated; a new independent process connects over `192.168.1.6:7770`, reclaims the vacated `RIGHT` slot, and preserves match score and 6 feed entries. Results recorded in `verification/simulated-network-test.json`.
 
 ## Dependencies and source
 

@@ -21,7 +21,21 @@
     "native_space_serve_reaches_guest": true,
     "server_restart_resets_score_and_one_ball": true,
     "local_starter_w_s_arrow_input_and_goals": true,
-    "multiplayer_play_mode_four_process_roles": true
+    "multiplayer_play_mode_four_process_roles": true,
+    "simulated_lan_socket_multi_endpoint": true
+  },
+  "simulated_lan_test": {
+    "network_mode": "Physical LAN IP stack endpoint routing",
+    "lan_ip": "192.168.1.6",
+    "port": 7770,
+    "tick_rate": 30,
+    "host_role": "LEFT (0)",
+    "guest_role": "RIGHT (1)",
+    "spectator_role": "SPECTATOR (2)",
+    "late_joiner_reclaimed_side": "RIGHT (1)",
+    "score_preserved": [0, 0],
+    "feed_events_replicated": 6,
+    "result": "PASS"
   },
   "visual_traffic_sample": {
     "server_in_Bps": 31,
