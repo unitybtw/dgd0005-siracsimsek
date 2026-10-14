@@ -6,7 +6,7 @@ Each player owns one spawned paddle and moves only that paddle using its owner g
 
 ## Run server and client (three lines)
 
-1. In Unity Hub, add `Pong/`, select 6000.3.2f1, open it and let packages/scripts import; the setup tool generates and opens `Assets/Scenes/Pong.unity` once.
+1. In Unity Hub, add `Pong/`, select 6000.3.2f1, open it, let packages/scripts import, then open `Assets/Scenes/Pong.unity`.
 2. Press Play on the server laptop, click **Start Server**, then **Start Client**; its first client receives LEFT.
 3. On the guest laptop open the same scene, press Play, enter the server's hotspot IP and click **Start Client**; move with W/S or arrows and press Space on your serve.
 
@@ -39,3 +39,7 @@ Real local tests used a Unity Editor host and separate macOS Development-build c
 Package Manager can still show invalid-signature warnings for some official Unity packages. Unity documents a certificate-validity bug in old Editors, fixed from 6000.3.7f1. The homework explicitly requires 6000.3.2f1, so that version is retained and signature checks are not disabled. This warning is separate from compilation; see [Unity's issue](https://issuetracker-mig.prd.it.unity3d.com/issues/package-signature-validation-unexpectedly-return-an-invalid-signature-status-if-the-validation-check-is-done-after-the-code-signing-certificate-validaty-range-has-passed).
 
 The repository is [unitybtw/dgd0005-siracsimsek](https://github.com/unitybtw/dgd0005-siracsimsek), created private. Week03 includes measured 10/30/60 Hz traffic, all Section 14 answers and Section 13 vocabulary from the supplied lecture notes. Native W/S/arrows/Space input and a fresh zero-score server restart were tested. Two physical laptops/hotspot and the partner connection cards remain pending because a second laptop was unavailable. The original per-step push chronology cannot be recreated; current commits record actual final preparation.
+
+## Multiplayer Play Mode (separate server plus three clients)
+
+Open Window > Multiplayer > Multiplayer Play Mode. Activate Players 2, 3 and 4; give Player 2 the Server tag (Project Settings > Multiplayer > Playmode already lists it). Press Play. ServerBootstrap starts Player 2's server automatically. Click Start Client in Main, then Player 3, then Player 4, using 127.0.0.1. Expected roles: Main LEFT, Player 3 RIGHT, Player 4 SPECTATOR. This arrangement was tested through four actual Unity processes; their snapshots are in `verification/multiplayer-play-mode.json`. Player activation and assigned per-player tags live in Unity's local Library cache, so repeat this assignment after a fresh clone.

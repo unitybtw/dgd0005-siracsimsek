@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-14",
+  "unity": "6000.3.2f1",
+  "scope": "one Editor host and two separate local Development-build clients; not physical laptops",
+  "checks": {
+    "right_assigned": true,
+    "spectator_assigned": true,
+    "one_ball_each": true,
+    "owner_movement_replicated": true,
+    "ball_motion_replicated": true,
+    "score_replicated": true,
+    "goal_observers_rpc": true,
+    "you_serve_target_only": true,
+    "rejoin_receives_existing_score": true,
+    "rejoin_receives_six_events": true,
+    "no_runtime_exceptions_final_clients": true,
+    "late_join_keeps_current_paddle_position": true,
+    "traffic_statistics_enabled_in_scene": true,
+    "latest_client_has_no_exceptions": true,
+    "native_keyboard_owner_only_movement": true,
+    "native_space_serve_reaches_guest": true,
+    "server_restart_resets_score_and_one_ball": true,
+    "local_starter_w_s_arrow_input_and_goals": true,
+    "multiplayer_play_mode_four_process_roles": true
+  },
+  "visual_traffic_sample": {
+    "server_in_Bps": 31,
+    "server_out_Bps": 762,
+    "client_in_Bps": 369,
+    "client_out_Bps": 21,
+    "purpose": "HUD sanity check during one rally, not the homework 10/30/60 Hz measurement table"
+  },
+  "benchmark_summary": {
+    "10": {
+      "server_out_Bps_after_10s": 223.9,
+      "mean_server_out_Bps_after_10s": 342.8,
+      "samples": 40,
+      "clients": 2,
+      "auto_tracking": true,
+      "last_score": [
+        0,
+        0
+      ]
+    },
+    "60": {
+      "server_out_Bps_after_10s": 2505.9,
+      "mean_server_out_Bps_after_10s": 1701.6,
+      "samples": 42,
+      "clients": 2,
+      "auto_tracking": true,
+      "last_score": [
+        0,
+        0
+      ]
+    },
+    "30": {
+      "server_out_Bps_after_10s": 1168.2,
+      "mean_server_out_Bps_after_10s": 900.6,
+      "samples": 42,
+      "clients": 2,
+      "auto_tracking": true,
+      "last_score": [
+        0,
+        0
+      ]
+    }
+  }
+}

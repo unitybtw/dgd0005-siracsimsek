@@ -28,3 +28,4 @@ verification/**/*.log
 verification/*.log
 Starter 2/
 delivery/
+verification/*log*

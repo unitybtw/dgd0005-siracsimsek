@@ -1,0 +1,35 @@
+{
+  "10": {
+    "server_out_Bps_after_10s": 223.9,
+    "mean_server_out_Bps_after_10s": 342.8,
+    "samples": 40,
+    "clients": 2,
+    "auto_tracking": true,
+    "last_score": [
+      0,
+      0
+    ]
+  },
+  "60": {
+    "server_out_Bps_after_10s": 2505.9,
+    "mean_server_out_Bps_after_10s": 1701.6,
+    "samples": 42,
+    "clients": 2,
+    "auto_tracking": true,
+    "last_score": [
+      0,
+      0
+    ]
+  },
+  "30": {
+    "server_out_Bps_after_10s": 1168.2,
+    "mean_server_out_Bps_after_10s": 900.6,
+    "samples": 42,
+    "clients": 2,
+    "auto_tracking": true,
+    "last_score": [
+      0,
+      0
+    ]
+  }
+}
