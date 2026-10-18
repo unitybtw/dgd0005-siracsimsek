@@ -22,3 +22,7 @@ Both prefab NetworkTransforms have Client Authoritative off. In three-process Mu
 Movement now runs in `OnTick` on the server using `speed * TimeManager.TickDelta`; the owner sends an axis every tick, including zero. Tick callbacks are subscribed in `OnStartNetwork` and removed in `OnStopNetwork`. Initial placement also writes position only on the server. The opt-in benchmark bot now queues keyboard input instead of writing client positions.
 
 In three-process Multiplayer Play Mode, W sent from LEFT moved the server's LEFT paddle (z=0.8000001 at an intermediate snapshot), while RIGHT stayed at zero. Both client views subsequently received LEFT z=4, the court limit. Releasing W sent zero and retained that position. The local RTT HUD counter measured **0 ms** (loopback, rounded integer; not zero total input/display delay). Tick scheduling and the NetworkTransform interpolation buffer also add delay. No physical-network RTT is claimed.
+
+## Step 3 - Check the input
+
+If the server receives `axis = 50`, `axis = Mathf.Clamp(axis, -1f, 1f);` changes it to 1. This line runs on the **server**, inside the owner-only `[ServerRpc] ServerSetAxis`. The server's tick then multiplies the accepted axis by its own speed (8 units/s) and tick duration. NaN returns before any state change, and a spectator request returns before writing `_serverAxis`. Positive/negative infinity is also reduced to +1/-1 by the clamp. Client-side presentation never decides server speed.
