@@ -12,3 +12,7 @@ This continues the working Week 3 FishNet Pong project in `Pong/` using Unity 60
 - Step 5: retain C (20 requests), X (axis 50), T (local teleport); record real multiplayer results and a server Console screenshot.
 
 Each implementation step is committed and pushed separately during this work. Results and answers will be recorded below as they are obtained. A physical partner test and a deadline/on-time claim are not inferred from local testing.
+
+## Step 1 result
+
+Both prefab NetworkTransforms have Client Authoritative off. In three-process Multiplayer Play Mode (server + two clients), queued W moved only the old client-local copy to z=4; the server retained LEFT z=0 and RIGHT z=0. This is the expected loss of client movement authority before adding input RPCs. FishNet suppresses unchanged transform sends, so an idle server did not immediately correct that local visual change. Evidence: `verification/week04/step1.json`.

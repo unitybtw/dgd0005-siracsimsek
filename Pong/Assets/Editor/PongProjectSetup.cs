@@ -116,7 +116,7 @@ public static class PongProjectSetup
         left.name = "Paddle";
         left.AddComponent<NetworkObject>();
         left.AddComponent<PaddleController>();
-        ConfigureTransform(left, true);
+        ConfigureTransform(left, false);
         SerializeNetworkObject(left.GetComponent<NetworkObject>(), false);
         var paddle = PrefabUtility.SaveAsPrefabAsset(left, "Assets/Prefabs/Paddle.prefab").GetComponent<NetworkObject>();
         Object.DestroyImmediate(left);

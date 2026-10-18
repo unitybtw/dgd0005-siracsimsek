@@ -1,0 +1,18 @@
+{
+  "mode": "Multiplayer Play Mode: one server, two separate client processes",
+  "paddleClientAuthoritative": false,
+  "ballClientAuthoritative": false,
+  "input": "W queued through Unity Input System in LEFT client",
+  "serverPaddles": [
+    {
+      "side": 0,
+      "z": 0
+    },
+    {
+      "side": 1,
+      "z": 0
+    }
+  ],
+  "clientLeftZ": 4,
+  "result": "Client-local old Update movement did not change server position. Idle NetworkTransform did not immediately correct the local copy; no input RPC exists at this stage."
+}
