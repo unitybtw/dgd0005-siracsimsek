@@ -12,6 +12,10 @@ public class PaddleController : NetworkBehaviour
     public static PaddleController Local { get; private set; }
     [SerializeField] private float speed = 8f;
     private float _serverAxis;
+    private const double MinInputGap = 0.030;
+    private double _lastInputTime = -1;
+    public int RejectedInputs;
+    private System.Func<string> rejectedPanel;
 
     public override void OnStartNetwork()
     {
@@ -24,12 +28,27 @@ public class PaddleController : NetworkBehaviour
         base.OnStopNetwork();
     }
     private void Awake() => Side.OnChange += SideChanged;
-    private void OnDestroy() => Side.OnChange -= SideChanged;
+    private void OnDestroy()
+    {
+        Side.OnChange -= SideChanged;
+        RemoveRejectedPanel();
+    }
+    private void RemoveRejectedPanel()
+    {
+        if (rejectedPanel != null) ConnectionHud.Panels.Remove(rejectedPanel);
+        rejectedPanel = null;
+    }
     private void Register() { if (!All.Contains(this)) All.Add(this); }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
+        _serverAxis = 0f;
+        _lastInputTime = -1;
+        RejectedInputs = 0;
+        RemoveRejectedPanel();
+        rejectedPanel = () => $"Rejected inputs (paddle {OwnerId}): {RejectedInputs}";
+        ConnectionHud.Panels.Add(rejectedPanel);
         bool left = All.Exists(p => p != null && p.IsServerInitialized && p.Side.Value == 0);
         bool right = All.Exists(p => p != null && p.IsServerInitialized && p.Side.Value == 1);
         Side.Value = !left ? 0 : !right ? 1 : 2;
@@ -51,6 +70,8 @@ public class PaddleController : NetworkBehaviour
     }
     public override void OnStopServer()
     {
+        RemoveRejectedPanel();
+        _serverAxis = 0f;
         GameState.Announce($"Client {Owner.ClientId} left {SideName(Side.Value)}");
         All.Remove(this);
         if (Side.Value < 2 && NetworkBall.Instance != null) NetworkBall.Instance.ResetToCentre();
@@ -105,6 +126,14 @@ public class PaddleController : NetworkBehaviour
         if (float.IsNaN(axis)) return;
         axis = Mathf.Clamp(axis, -1f, 1f);
         if (Side.Value >= 2) return;
+        double now = TimeManager.TicksToTime(TimeManager.Tick);
+        if (_lastInputTime >= 0 && now - _lastInputTime < MinInputGap)
+        {
+            RejectedInputs++;
+            Debug.Log($"[Server] Rejected input from client {OwnerId}: too fast.");
+            return;
+        }
+        _lastInputTime = now;
         _serverAxis = axis;
     }
     [ServerRpc]

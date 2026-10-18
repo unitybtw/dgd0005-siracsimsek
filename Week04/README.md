@@ -26,3 +26,12 @@ In three-process Multiplayer Play Mode, W sent from LEFT moved the server's LEFT
 ## Step 3 - Check the input
 
 If the server receives `axis = 50`, `axis = Mathf.Clamp(axis, -1f, 1f);` changes it to 1. This line runs on the **server**, inside the owner-only `[ServerRpc] ServerSetAxis`. The server's tick then multiplies the accepted axis by its own speed (8 units/s) and tick duration. NaN returns before any state change, and a spectator request returns before writing `_serverAxis`. Positive/negative infinity is also reduced to +1/-1 by the clamp. Client-side presentation never decides server speed.
+
+## Step 4 - Why 30 ms?
+
+At 30 Hz a regular keyboard request arrives every 33.33 ms. A 30 ms minimum accepts that cadence while rejecting multiple requests processed in one server tick. The clock is `TimeManager.TicksToTime(TimeManager.Tick)` on the server; a client cannot supply the timestamp. `_lastInputTime` is an **instance** field on each owned paddle, so one player's spam cannot consume the other player's allowance. `[ServerRpc]` retains FishNet's default ownership check.
+
+- **5 ms:** still rejects requests in the same server tick, because this clock has tick resolution, but allows requests on every distinct tick; it is a weaker minimum if tick rate rises. It does not measure sub-tick 5 ms spacing.
+- **500 ms:** accepts only about two inputs per second, rejects normal 30 Hz input, and holds stale directions for too long; movement and stopping feel unresponsive.
+
+Well-formedness/range and the required spectator guard run first; the time check runs before `_serverAxis` changes. In requests with further game rules, validate them after rate accounting, then write state and announce. Here axis is input memory; the server tick performs movement. Each rejected rate-limited request increments `RejectedInputs` and logs the specified message. Server HUD panels are added on start and removed on stop/destruction so reconnects do not leak stale counters.
