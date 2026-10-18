@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FishNet.Connection;
+using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
@@ -16,6 +17,8 @@ public class PaddleController : NetworkBehaviour
     private double _lastInputTime = -1;
     public int RejectedInputs;
     private System.Func<string> rejectedPanel;
+    private bool _skipNextTickInput;
+    private NetworkTransform networkTransform;
 
     public override void OnStartNetwork()
     {
@@ -27,7 +30,11 @@ public class PaddleController : NetworkBehaviour
         TimeManager.OnTick -= OnTick;
         base.OnStopNetwork();
     }
-    private void Awake() => Side.OnChange += SideChanged;
+    private void Awake()
+    {
+        Side.OnChange += SideChanged;
+        networkTransform = GetComponent<NetworkTransform>();
+    }
     private void OnDestroy()
     {
         Side.OnChange -= SideChanged;
@@ -60,6 +67,7 @@ public class PaddleController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+        networkTransform.OnDataReceived += CorrectVisualDrift;
         Register();
         if (IsOwner)
         {
@@ -79,11 +87,18 @@ public class PaddleController : NetworkBehaviour
     }
     public override void OnStopClient()
     {
+        networkTransform.OnDataReceived -= CorrectVisualDrift;
         All.Remove(this);
         if (Local == this) Local = null;
         base.OnStopClient();
     }
     private void SideChanged(int previous, int next, bool asServer) => Place();
+    private void CorrectVisualDrift(NetworkTransform.TransformData previous, NetworkTransform.TransformData next)
+    {
+        // A local teleport changes presentation only. Snap large errors to an actual server snapshot.
+        if (!IsServerInitialized && Vector3.Distance(transform.localPosition, next.Position) > 1f)
+            transform.localPosition = next.Position;
+    }
     public static string SideName(int side) => side == 0 ? "LEFT" : side == 1 ? "RIGHT" : "SPECTATOR";
     private void Place()
     {
@@ -99,7 +114,21 @@ public class PaddleController : NetworkBehaviour
     {
         if (!IsOwner) return;
         var kb = Keyboard.current;
-        if (kb == null || Side.Value >= 2 || ConnectionHud.EditingAddress) return;
+        if (kb == null || ConnectionHud.EditingAddress) return;
+        if (kb.cKey.wasPressedThisFrame)
+        {
+            // Replace this tick's ordinary input, so the burst contains 20, not 21, requests.
+            _skipNextTickInput = true;
+            for (int i = 0; i < 20; i++) ServerSetAxis(1f);
+        }
+        else if (kb.xKey.wasPressedThisFrame)
+        {
+            _skipNextTickInput = true;
+            ServerSetAxis(50f);
+        }
+        if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
+            transform.position = NetworkBall.Instance.transform.position;
+        if (Side.Value >= 2) return;
         if (kb.spaceKey.wasPressedThisFrame) RequestServe();
     }
     private void OnTick()
@@ -112,12 +141,15 @@ public class PaddleController : NetworkBehaviour
                 axis = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f)
                      - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
             // Zero is an input too: releasing a key must stop the server's paddle.
-            ServerSetAxis(axis);
+            if (_skipNextTickInput) _skipNextTickInput = false;
+            else ServerSetAxis(axis);
         }
         if (IsServerInitialized)
         {
             transform.position += Vector3.forward * _serverAxis * speed * (float)TimeManager.TickDelta;
             Court.ClampPaddle(transform);
+            // FishNet normally suppresses idle snapshots. Keep correcting even an idle client's T cheat.
+            networkTransform.ForceSend();
         }
     }
     [ServerRpc]

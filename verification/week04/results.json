@@ -1,0 +1,268 @@
+{
+  "date": "2026-10-18",
+  "unity": "6000.3.2f1",
+  "tickRate": 30,
+  "scope": "Local processes on one Mac; no physical second laptop or cloud deployment",
+  "mppmStep2": {
+    "serverAndClients": 3,
+    "leftServerIntermediateZ": 0.8000001,
+    "leftFinalZ": 4,
+    "rightFinalZ": 0,
+    "observedRttMs": 0
+  },
+  "nativeC": {
+    "serverTick": 1675,
+    "rejectedDelta": 19,
+    "leftBefore": 2.933333396911621,
+    "leftAfter": 3.200000047683716,
+    "otherPlayerDelta": 0.0
+  },
+  "independentPaddles": {
+    "serverTick": 5477,
+    "rejectedDelta": 19,
+    "leftBefore": 3.7333333492279053,
+    "leftAfter": 4.0,
+    "otherPlayerDelta": -0.2666666507720947
+  },
+  "nativeX": {
+    "serverTick": 2378,
+    "before": 3.200000047683716,
+    "after": 3.4666666984558105,
+    "sentAxis": 50
+  },
+  "nativeT": {
+    "clientTick": 2606,
+    "rttMs": 13,
+    "jumpPosition": {
+      "x": 0.0,
+      "y": 0.25,
+      "z": 0.0
+    },
+    "correctedPosition": {
+      "x": -7.0,
+      "y": 0.5,
+      "z": 3.4666666984558105
+    },
+    "observedCorrectionMs": 5.542083999998226,
+    "serverXNeverChanged": true
+  },
+  "maximumObservedServerSpeed": 8.000003099441528,
+  "allServerPositionsFinite": true,
+  "allServerPaddlesInsideCourt": true,
+  "nanRequest": "Sent through owner RPC by opt-in probe; no non-finite server position",
+  "spectatorSpam": "Sent through owned RPC by opt-in probe; no movement, counter stays zero",
+  "sharedGoalSnapshots": [
+    {
+      "time": 222.09269866921773,
+      "tickDelta": 0.03333333333333333,
+      "tick": 3976,
+      "rtt": 0,
+      "frame": 73936,
+      "localSide": -1,
+      "left": 1,
+      "right": 0,
+      "server": true,
+      "client": false,
+      "inPlay": false,
+      "ball": {
+        "x": 0.0,
+        "y": 0.25,
+        "z": 0.0
+      },
+      "paddles": [
+        {
+          "side": 0,
+          "owner": 0,
+          "rejected": 163,
+          "position": {
+            "x": -7.0,
+            "y": 0.5,
+            "z": 3.7333333492279053
+          }
+        },
+        {
+          "side": 1,
+          "owner": 1,
+          "rejected": 85,
+          "position": {
+            "x": 7.0,
+            "y": 0.5,
+            "z": 4.0
+          }
+        },
+        {
+          "side": 2,
+          "owner": 2,
+          "rejected": 0,
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "time": 133.47512850680275,
+      "tickDelta": 0.03333333333333333,
+      "tick": 3978,
+      "rtt": 13,
+      "frame": 15663,
+      "localSide": 0,
+      "left": 1,
+      "right": 0,
+      "server": false,
+      "client": true,
+      "inPlay": false,
+      "ball": {
+        "x": 0.0,
+        "y": 0.25,
+        "z": 0.0
+      },
+      "paddles": [
+        {
+          "side": 0,
+          "owner": 0,
+          "rejected": 0,
+          "position": {
+            "x": -7.0,
+            "y": 0.5,
+            "z": 3.7333333492279053
+          }
+        },
+        {
+          "side": 1,
+          "owner": 1,
+          "rejected": 0,
+          "position": {
+            "x": 7.0,
+            "y": 0.5,
+            "z": 4.0
+          }
+        },
+        {
+          "side": 2,
+          "owner": 2,
+          "rejected": 0,
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "time": 112.67551966996827,
+      "tickDelta": 0.03333333333333333,
+      "tick": 3978,
+      "rtt": 27,
+      "frame": 55378,
+      "localSide": 1,
+      "left": 1,
+      "right": 0,
+      "server": false,
+      "client": true,
+      "inPlay": false,
+      "ball": {
+        "x": 0.0,
+        "y": 0.25,
+        "z": 0.0
+      },
+      "paddles": [
+        {
+          "side": 0,
+          "owner": 0,
+          "rejected": 0,
+          "position": {
+            "x": -7.0,
+            "y": 0.5,
+            "z": 3.7333333492279053
+          }
+        },
+        {
+          "side": 1,
+          "owner": 1,
+          "rejected": 0,
+          "position": {
+            "x": 7.0,
+            "y": 0.5,
+            "z": 4.0
+          }
+        },
+        {
+          "side": 2,
+          "owner": 2,
+          "rejected": 0,
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "time": 0.9593571312857143,
+      "tickDelta": 0.03333333333333333,
+      "tick": 3975,
+      "rtt": 0,
+      "frame": 49,
+      "localSide": 2,
+      "left": 1,
+      "right": 0,
+      "server": false,
+      "client": true,
+      "inPlay": false,
+      "ball": {
+        "x": 0.0,
+        "y": 0.25,
+        "z": 0.0
+      },
+      "paddles": [
+        {
+          "side": 0,
+          "owner": 0,
+          "rejected": 0,
+          "position": {
+            "x": -7.0,
+            "y": 0.5,
+            "z": 3.7333333492279053
+          }
+        },
+        {
+          "side": 1,
+          "owner": 1,
+          "rejected": 0,
+          "position": {
+            "x": 7.0,
+            "y": 0.5,
+            "z": 4.0
+          }
+        },
+        {
+          "side": 2,
+          "owner": 2,
+          "rejected": 0,
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "importantLimit": "Instrumented load and Editor MCP pauses also batch normal input into one server tick; cumulative rejection totals are not a cheat count.",
+  "isolatedConsoleCapture": {
+    "freshServer": true,
+    "separateClient": true,
+    "ownerId": 0,
+    "rejectedInputs": 19,
+    "balls": 1,
+    "ordinaryClientTickInput": "Temporarily unsubscribed by opt-in QA probe to isolate the 20-RPC burst; server ticks and RPC validation unchanged. C is queued through the Unity Input System and runs the real Update key handler.",
+    "image": "Week04/Captures/server-console-c.png",
+    "hudImage": "Pong/Captures/week04-server.png"
+  },
+  "finalUnityConsoleErrors": 0
+}

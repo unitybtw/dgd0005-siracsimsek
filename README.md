@@ -1,8 +1,10 @@
-# Pong - Week 3 multiplayer assignment
+# Pong - Week 4 server-authoritative multiplayer assignment
 
 Unity **6000.3.2f1**, Universal 3D, FishNet's official **4.7.3** tag (release title **4.7.3R**), Tugboat UDP **7770**, tick rate **30**. No Mirror or Unity Netcode.
 
-Each player owns one spawned paddle and moves only that paddle using its owner guard and a client-authoritative NetworkTransform. Nobody on a client owns the ball or shared GameState: the server alone simulates the ball, authorizes serves and writes the scores. Everybody receives the same ball position, score, serving side and recent event feed; extra clients are spectators.
+Each player owns one spawned paddle and sends only an input axis to its owner-only ServerRpc at 30 Hz. The server rejects NaN and spectator input, clamps the axis to [-1, 1], accepts at most one input per paddle inside a 30 ms window, and moves/clamps the paddle at 8 units/s. Paddle and ball NetworkTransforms both have Client Authoritative off and send the server's position back to everybody, including the owner. The server also decides ball simulation, serve and score; extra clients spectate.
+
+**Homework 2:** [Week04/README.md](Week04/README.md) contains the Step 3/4/5 answers, real C/X/T measurements, server Console capture, two vocabulary words and lecture self-review. Evidence is in `verification/week04/`. C sends 20 inputs, X sends 50, and T teleports the local visual copy in a separate client. Debug keys stay in the project. T does not run in a listen host, which shares the trusted server transform.
 
 ## Run server and client (three lines)
 
@@ -18,7 +20,8 @@ Two active players are required to serve. The ball starts grey; the LEFT player 
 - `Pong/Assets/Scripts/Network/`: ConnectionLogger, PaddleController, NetworkBall, BallSpawner and GameState.
 - `Pong/Assets/Scripts/Tools/`: replacement ConnectionHud and ServerBootstrap, because the course Tools folder was not supplied.
 - `Pong/Assets/Editor/PongProjectSetup.cs`: creates the local and network scenes, paddle/ball prefabs, manager, references and build scene on first successful Editor import. The menu **Pong > Create missing scenes and prefabs** can also run it. It preserves an existing Pong scene.
-- `Week03/README.md`: written answers and the remaining real measurement cards.
+- `Week04/README.md`: current Homework 2 answers, measurements, screenshots and run instructions.
+- `Week03/README.md`: historical Homework 1 answers and remaining physical-network measurement cards.
 - `PLAN.md`: the full implementation, validation and hand-in plan in Turkish.
 - `verification/`: static compiler evidence and remaining validation scope.
 
@@ -38,7 +41,7 @@ The following captures demonstrate real runtime states during local verification
 ![Spectator and Multi-Client Role Assignment](Pong/Captures/pong-host.png)
 *Figure 3: Multiplayer role distribution. Shows client 0 assigned as LEFT, client 1 assigned as RIGHT, and client 2 assigned as SPECTATOR (paddle renderer disabled, spectator HUD).*
 
-## Comprehensive Local Verification Summary
+## Week 3 verification history (before Homework 2)
 
 Every gameplay mechanic, network flow, and replication feature required by the homework specification has been verified in local multi-process runs:
 
@@ -66,7 +69,7 @@ Every gameplay mechanic, network flow, and replication feature required by the h
   - Automated continuous rally traffic measurements recorded in `verification/benchmarks/summary.json` (342.8 B/s at 10 Hz, 900.6 B/s at 30 Hz, 1701.6 B/s at 60 Hz).
 - **Simulated Multi-Machine LAN Endpoint Verification (`tools/test_simulated_network.py`):**
   - Host process binds Tugboat to UDP port 7770 on physical Wi-Fi IP `192.168.1.6`.
-  - Remote guest process connects explicitly over `192.168.1.6:7770`, routing through the physical network interface stack rather than loopback, and receives role `RIGHT (orange)`.
+  - Remote guest process connects explicitly over `192.168.1.6:7770`, using the host's LAN address on the same machine; physical network traversal between two devices was not tested, and receives role `RIGHT (orange)`.
   - Separate spectator process connects over `192.168.1.6:7770` and is assigned `SPECTATOR` (renderer disabled, spectator HUD).
   - Mid-match disconnect & reconnect verified: guest process is terminated; a new independent process connects over `192.168.1.6:7770`, reclaims the vacated `RIGHT` slot, and preserves match score and 6 feed entries. Results recorded in `verification/simulated-network-test.json`.
 
@@ -74,7 +77,7 @@ Every gameplay mechanic, network flow, and replication feature required by the h
 
 FishNet is vendored under `Pong/Assets/FishNet/` from [the official 4.7.3 tag](https://github.com/FirstGearGames/FishNet/tree/4.7.3). Its upstream package metadata and FISHNET_VERSION constant still say 4.7.2; they have been left unchanged. The release title is [4.7.3R](https://github.com/FirstGearGames/FishNet/releases/tag/4.7.3). Its included license files apply. Unity packages are pinned in `Packages/manifest.json`, including Multiplayer Play Mode 2.0.2, Input System 1.20.1 and URP 17.3.0.
 
-Client-authoritative paddles intentionally follow the homework; a modified client can lie about speed/position. See [FishNet's official movement tutorial](https://github.com/FirstGearGames/FishNet-Documentation/blob/main/tutorials/getting-started/moving-your-player-around.md). The serve and score decisions remain server-authoritative.
+Week 3 originally used client-authoritative paddles. Homework 2 replaces that authority with the server input path described above. The old 10/30/60 Hz measurements remain historical Week 3 evidence; they are not measurements of the current input RPCs and forced idle snapshots. The required two-laptop/hotspot work from Week 3 still needs physical hardware.
 
 ## Validation status
 

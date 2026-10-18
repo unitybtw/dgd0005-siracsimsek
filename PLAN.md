@@ -58,3 +58,8 @@ Bazı resmi Unity paketlerinde invalid signature uyarısı mevcut. Unity bunu es
 Yerel starter W/S-oklar ve gol logları, gerçek owner W ve Space ile ağ oyunu, sunucu yeniden başlatma, dört Unity Multiplayer Play Mode süreci (Server/LEFT/RIGHT/SPECTATOR), ortak top/skor/olay geçmişi, 10/30/60 Hz gerçek trafik ölçümleri ve ders notlarının 13-14. bölüm cevapları tamamlandı. Ölçümlerin istemci görüntüsü sütunu güncelleme aralıklarını açıklar; headless ölçüme insan gözlemi yapılmış gibi davranılmaz.
 
 İkinci laptopun hazır olmadığını kullanıcı bildirdi. İki fiziksel laptop, iki hotspot buluşması, bağlantı kartı ve sözlü demo bu nedenle hâlâ gerçek uygulama gerektirir. Özgün geliştirme sırasında adım adım commit kronolojisi geriye dönük üretilemez. Öğretmene tasarım commit bağlantısı gönderilmedi; özel depoya erişim verilmesi veya görünürlük kararı öğrenciye aittir.
+
+
+## 18 Ekim 2026 - Homework 2
+
+Yeni ödevin beş adımı mevcut proje üzerinde uygulanıyor. Paddle ve Ball sunucu yetkisinde; yön girdisi her tick RPC ile gönderiliyor, sunucuda doğrulanıp 30 ms aralıkla kabul ediliyor. C/X/T ve oyuncu başına ret sayacı eklendi. Week04/README.md yeni teslimin cevaplarını ve doğrulama kapsamını içerir. Önceki Week03 ölçümleri tarihsel kanıttır. Bulut dağıtımı yeni Homework2.pdf'nin beş zorunlu adımında yoktur; ders notlarındaki genel bulut anlatımı dağıtım yapılmış olduğu anlamına gelmez.

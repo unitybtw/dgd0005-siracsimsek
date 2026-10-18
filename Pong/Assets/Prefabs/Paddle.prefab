@@ -124,7 +124,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584095996606152828
+  _initializedTimestamp: -8584092695147589008
   _localLevelOfDetailCalculationType: 0
   _useLevelOfDetail: 0
   _useRootLevelOfDetail: 1
@@ -168,6 +168,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 216352356404070}
   _networkObjectCache: {fileID: 216352356404070}
   speed: 8
+  RejectedInputs: 0
 --- !u!114 &8053024401827406627
 MonoBehaviour:
   m_ObjectHideFlags: 0

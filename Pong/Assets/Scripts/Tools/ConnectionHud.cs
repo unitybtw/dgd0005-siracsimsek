@@ -101,7 +101,7 @@ public class ConnectionHud : MonoBehaviour
         GUILayout.Space(12);
         foreach (var panel in Panels) GUILayout.Label(panel(), body);
         GUILayout.Space(10);
-        GUILayout.Label("MOVE  W/S or arrows\nSERVE  Space (your turn)\nTwo players required. Extra clients spectate.", body);
+        GUILayout.Label("MOVE  W/S or arrows\nSERVE  Space (your turn)\nDEBUG  C: spam / X: speed / T: teleport\nTwo players required. Extra clients spectate.", body);
         GUILayout.EndScrollView();
         GUILayout.EndArea();
         if (Time.unscaledTime < flashUntil)
