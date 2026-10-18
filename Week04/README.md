@@ -16,3 +16,9 @@ Each implementation step is committed and pushed separately during this work. Re
 ## Step 1 result
 
 Both prefab NetworkTransforms have Client Authoritative off. In three-process Multiplayer Play Mode (server + two clients), queued W moved only the old client-local copy to z=4; the server retained LEFT z=0 and RIGHT z=0. This is the expected loss of client movement authority before adding input RPCs. FishNet suppresses unchanged transform sends, so an idle server did not immediately correct that local visual change. Evidence: `verification/week04/step1.json`.
+
+## Step 2 result and RTT
+
+Movement now runs in `OnTick` on the server using `speed * TimeManager.TickDelta`; the owner sends an axis every tick, including zero. Tick callbacks are subscribed in `OnStartNetwork` and removed in `OnStopNetwork`. Initial placement also writes position only on the server. The opt-in benchmark bot now queues keyboard input instead of writing client positions.
+
+In three-process Multiplayer Play Mode, W sent from LEFT moved the server's LEFT paddle (z=0.8000001 at an intermediate snapshot), while RIGHT stayed at zero. Both client views subsequently received LEFT z=4, the court limit. Releasing W sent zero and retained that position. The local RTT HUD counter measured **0 ms** (loopback, rounded integer; not zero total input/display delay). Tick scheduling and the NetworkTransform interpolation buffer also add delay. No physical-network RTT is claimed.

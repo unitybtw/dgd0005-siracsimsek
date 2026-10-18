@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 // Opt-in local QA instrumentation; never created during normal gameplay.
 public class PongSmokeProbe : MonoBehaviour
@@ -29,9 +31,14 @@ public class PongSmokeProbe : MonoBehaviour
         var ball = NetworkBall.Instance;
         if (benchmark && local != null && local.Side.Value < 2 && ball != null)
         {
-            var position = local.transform.position;
-            position.z = Mathf.MoveTowards(position.z, Mathf.Clamp(ball.transform.position.z, -4f, 4f), 8f * Time.deltaTime);
-            local.transform.position = position;
+            // Exercise the same input path as a player; never move the client transform.
+            if (Keyboard.current != null)
+            {
+                float difference = Mathf.Clamp(ball.transform.position.z, -4f, 4f) - local.transform.position.z;
+                var keys = Mathf.Abs(difference) < 0.25f ? new KeyboardState()
+                    : new KeyboardState(difference > 0 ? Key.W : Key.S);
+                InputSystem.QueueStateEvent(Keyboard.current, keys);
+            }
             if (Time.unscaledTime >= nextServe && state != null && state.ServingSide.Value == local.Side.Value && !ball.InPlay.Value)
             {
                 nextServe = Time.unscaledTime + 1;

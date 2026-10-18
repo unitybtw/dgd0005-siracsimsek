@@ -11,6 +11,18 @@ public class PaddleController : NetworkBehaviour
     public static readonly List<PaddleController> All = new List<PaddleController>();
     public static PaddleController Local { get; private set; }
     [SerializeField] private float speed = 8f;
+    private float _serverAxis;
+
+    public override void OnStartNetwork()
+    {
+        base.OnStartNetwork();
+        TimeManager.OnTick += OnTick;
+    }
+    public override void OnStopNetwork()
+    {
+        TimeManager.OnTick -= OnTick;
+        base.OnStopNetwork();
+    }
     private void Awake() => Side.OnChange += SideChanged;
     private void OnDestroy() => Side.OnChange -= SideChanged;
     private void Register() { if (!All.Contains(this)) All.Add(this); }
@@ -58,7 +70,8 @@ public class PaddleController : NetworkBehaviour
         if (renderer != null) renderer.enabled = Side.Value < 2;
         if (Side.Value >= 2) return;
         // Keep the z from spawn/NetworkTransform, including a late joiner's current position.
-        transform.position = new Vector3(Side.Value == 0 ? -Court.PaddleX : Court.PaddleX, 0.5f, transform.position.z);
+        if (IsServerInitialized)
+            transform.position = new Vector3(Side.Value == 0 ? -Court.PaddleX : Court.PaddleX, 0.5f, transform.position.z);
         Court.Paint(gameObject, Side.Value == 0 ? new Color(0.35f, 0.65f, 1f) : new Color(1f, 0.60f, 0.25f));
     }
     private void Update()
@@ -67,10 +80,29 @@ public class PaddleController : NetworkBehaviour
         var kb = Keyboard.current;
         if (kb == null || Side.Value >= 2 || ConnectionHud.EditingAddress) return;
         if (kb.spaceKey.wasPressedThisFrame) RequestServe();
-        float direction = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f)
-                        - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
-        transform.position += Vector3.forward * direction * speed * Time.deltaTime;
-        Court.ClampPaddle(transform);
+    }
+    private void OnTick()
+    {
+        if (IsOwner && Side.Value < 2)
+        {
+            var kb = Keyboard.current;
+            float axis = 0f;
+            if (kb != null && !ConnectionHud.EditingAddress)
+                axis = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f)
+                     - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
+            // Zero is an input too: releasing a key must stop the server's paddle.
+            ServerSetAxis(axis);
+        }
+        if (IsServerInitialized)
+        {
+            transform.position += Vector3.forward * _serverAxis * speed * (float)TimeManager.TickDelta;
+            Court.ClampPaddle(transform);
+        }
+    }
+    [ServerRpc]
+    private void ServerSetAxis(float axis)
+    {
+        _serverAxis = axis;
     }
     [ServerRpc]
     public void RequestServe()
