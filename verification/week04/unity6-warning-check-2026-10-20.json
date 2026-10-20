@@ -1,0 +1,13 @@
+{
+  "unity": "6000.3.2f1",
+  "compilation": "PASS",
+  "modernDefineApi": "PASS",
+  "removeDefinesNoOp": "PASS",
+  "date": "2026-10-20",
+  "sourceBaseCommit": "991b20913a548beffc1aeeaa5b2838e042638a96",
+  "file": "Pong/Assets/FishNet/Upgrading/UpgradeFromMirrorMenu.cs",
+  "sourceSHA256": "0ad1ac453c88a9a229197b21c5e1012bcdca8795a7ee31b5e3c96f28a40848d2",
+  "obsoleteMenuWarnings": 0,
+  "compilerErrors": 0,
+  "validation": "Unity batchmode compilation plus modern define API get/set and RemoveDefines invocation on an unchanged define set"
+}

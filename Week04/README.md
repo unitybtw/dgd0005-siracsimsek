@@ -2,6 +2,8 @@
 
 This continues the working Week 3 FishNet Pong project in `Pong/` using Unity 6000.3.2f1 and 30 Hz. The target is server-authoritative paddle movement, validated input, an independent 30 ms input limit per owned paddle, and retained C/X/T cheat demonstrations.
 
+Separate answer sheet: [ANSWERS.md](ANSWERS.md). Opening/importing: [IMPORT.md](IMPORT.md).
+
 ## Implementation steps
 
 - Baseline: Homework 1 scenes, ball, score and serve are present. Previous verification is retained in `verification/`.
