@@ -14,6 +14,7 @@ public class PongHomework2Probe : MonoBehaviour
     private int lastCommand, releaseFrame;
     private StreamWriter writer;
     private double nextFrameSample, nextFlush;
+    private double preciseFrameSamplingUntil;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Install()
@@ -70,8 +71,12 @@ public class PongHomework2Probe : MonoBehaviour
 
     private void LateUpdate()
     {
+        // Preserve the very brief T jump/correction even when it falls between 120 Hz samples.
+        if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
+            preciseFrameSamplingUntil = Time.realtimeSinceStartupAsDouble + 0.2;
         if (InstanceFinder.IsClientStarted && !InstanceFinder.IsServerStarted
-            && Time.realtimeSinceStartupAsDouble >= nextFrameSample)
+            && (Time.realtimeSinceStartupAsDouble >= nextFrameSample
+                || Time.realtimeSinceStartupAsDouble < preciseFrameSamplingUntil))
         {
             nextFrameSample = Time.realtimeSinceStartupAsDouble + 1.0 / 120;
             Sample();

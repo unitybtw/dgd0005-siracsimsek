@@ -6,6 +6,6 @@ The main run used Unity Editor server only, separate macOS Development LEFT and 
 
 The isolated Console screenshot deliberately paused the separate client's normal tick sender before queuing one C press, to exclude unrelated zero-axis packet rejections. The server and its limiter were unchanged. The counter became 19, the server HUD showed 19, one ball existed, and the Console error query was empty. This does not substitute for the native C measurement in the ordinary two-player run.
 
-Synchronous Editor tooling and the original high-frequency trace recording caused packet catch-up and background rejections. Do not equate cumulative counts with cheat-only counts. The final optional probe buffers output and caps extra client-frame samples at 120 Hz; this instrumentation change did not alter gameplay validation/movement and the subsequent Development build succeeded.
+Synchronous Editor tooling and the original high-frequency trace recording caused packet catch-up and background rejections. Do not equate cumulative counts with cheat-only counts. The final optional probe buffers output and normally caps extra client-frame samples at 120 Hz (the later CLI recheck captures every frame for 200 ms around T); this instrumentation change did not alter gameplay validation/movement and the subsequent Development build succeeded.
 
 All checks are local, on one Mac. Physical partner/hotspot testing, human vocabulary/line explanation, deadline compliance and any cloud deployment have not been established by these artifacts.

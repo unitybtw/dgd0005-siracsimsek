@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-20",
+  "sourceBaseCommit": "f22415e18980d2bfd99deb3e02227e0b276e92f2",
+  "testedPaddleSHA256": "8c0705ccf3dfb049418cf3b74097e14b9bd2ad317d56196d11344b643ee7cd28",
+  "mode": "Fresh CLI build; server + two clients + spectator as separate headless macOS processes",
+  "build": {
+    "unity": "6000.3.2f1",
+    "authorityOff": true,
+    "sendToOwner": true,
+    "perPaddleTimestamp": true,
+    "gapSeconds": 0.03,
+    "tickRate": 30,
+    "build": "Succeeded",
+    "buildErrors": 0
+  },
+  "normalInput": {
+    "leftZ": 0.2666666805744171,
+    "rightZ": -0.2666666805744171
+  },
+  "ordinaryC": [
+    {
+      "tick": 114,
+      "rejectedDelta": 19,
+      "movement": 0.2666666805744171
+    }
+  ],
+  "ordinaryX": {
+    "before": 0.5333333611488342,
+    "after": 0.8000000715255737,
+    "distance": 0.2666667103767395
+  },
+  "ordinaryT": {
+    "observedCorrectionMs": 1.492959000000127,
+    "jump": {
+      "x": 0.0,
+      "y": 0.25,
+      "z": 0.0
+    },
+    "corrected": {
+      "x": -7.0,
+      "y": 0.5,
+      "z": 0.8000000715255737
+    }
+  },
+  "spectatorRejectedBeforeRateCount": true,
+  "nanPreservesPriorValidAxis": true,
+  "isolatedC": {
+    "rejectedDelta": 19,
+    "otherPaddleContinued": true
+  },
+  "maximumSpeed": 8.000003099441528,
+  "finiteAndClamped": true,
+  "status": "PASS",
+  "testedProbeSHA256": "8c34dd5b9116830c75bcd8f338539dbf9e7e13ae82f27898c18299f22f676657",
+  "unityCliCommand": "/Applications/Unity/Hub/Editor/6000.3.2f1/Unity.app/Contents/MacOS/Unity -batchmode -nographics -quit -projectPath <clean temporary project copy> -executeMethod Homework2CliAudit.Run -logFile <build log>",
+  "scope": "Automated local CLI checks only. Deadline and oral explanation are not graded by this report."
+}
