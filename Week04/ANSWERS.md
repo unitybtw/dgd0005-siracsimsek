@@ -50,6 +50,6 @@ if (_lastInputTime >= 0 && now - _lastInputTime < MinInputGap)
 
 ![Server Console after one C: 19 rejections](Captures/server-console-c.png)
 
-The real Console capture uses Collapse to show 19 identical rejections as one row. Its isolated client temporarily paused ordinary tick input to exclude unrelated zero-axis packets. The server limiter was unchanged. The separate normal-input CLI test also recorded C with exactly 19 rejections. Full scope and measured results are in README.md.
+The real Console capture uses Collapse to show 19 identical rejections after one C press, with two separate clients connected and both ordinary tick senders active. The opt-in probe queued the actual C key through Unity's Input System. C and X call their RPCs directly in Update, omitting only the next ordinary input packet to avoid adding a zero-axis packet to the same batch. The server limiter is unchanged. Full scope and measured results are in README.md.
 
 The two vocabulary words and pointed-at line must also be explained orally; this document does not claim that the oral demonstration or deadline requirement has been completed.

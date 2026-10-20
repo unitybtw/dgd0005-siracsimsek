@@ -1,0 +1,27 @@
+{
+  "ordinaryTickInputActive": true,
+  "clients": 2,
+  "cPresses": 1,
+  "before": 9,
+  "after": 29,
+  "consoleRejections": 20,
+  "serverTick": 189,
+  "date": "2026-10-20",
+  "capture": "Week04/Captures/server-console-c.png",
+  "captureSHA256": "3ee5fb087224a7fea27a8e3c86fb0b7d3d6210e289591fe05b594f12146847a6",
+  "visibleCollapsedCount": 19,
+  "burst": {
+    "beforeTick": 184,
+    "tick": 185,
+    "beforeRejected": 9,
+    "afterRejected": 28,
+    "rejectedDelta": 19,
+    "movement": 0.2666666805744171
+  },
+  "subsequentOrdinaryRejection": {
+    "tick": 187,
+    "rejectedDelta": 1
+  },
+  "note": "The Console framebuffer visibly shows the 19-rejection C burst. Before capture metadata was written another ordinary packet was rejected at tick 187, so metadata records 20 messages since Clear. Both ordinary client input senders remained active. No pauseTickInput command was issued.",
+  "testedPaddleSHA256": "bfc2419380fd2aae8ea8635113ccaaa071950e2df4d32e7089e34be9ecaff9a4"
+}

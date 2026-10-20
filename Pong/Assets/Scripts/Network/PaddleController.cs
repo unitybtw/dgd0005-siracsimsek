@@ -18,7 +18,6 @@ public class PaddleController : NetworkBehaviour
     public int RejectedInputs;
     private System.Func<string> rejectedPanel;
     private bool _skipNextTickInput;
-    private bool _speedHackPending;
     private NetworkTransform networkTransform;
 
     public override void OnStartNetwork()
@@ -124,8 +123,9 @@ public class PaddleController : NetworkBehaviour
         }
         else if (kb.xKey.wasPressedThisFrame)
         {
-            // Replace a scheduled input instead of racing a zero-axis packet between ticks.
-            _speedHackPending = true;
+            // Send the cheat here, as in the handout; omit the next ordinary packet.
+            _skipNextTickInput = true;
+            ServerSetAxis(50f);
         }
         if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
             transform.position = NetworkBall.Instance.transform.position;
@@ -134,12 +134,7 @@ public class PaddleController : NetworkBehaviour
     }
     private void OnTick()
     {
-        if (IsOwner && _speedHackPending)
-        {
-            _speedHackPending = false;
-            ServerSetAxis(50f);
-        }
-        else if (IsOwner && Side.Value < 2)
+        if (IsOwner && Side.Value < 2)
         {
             var kb = Keyboard.current;
             float axis = 0f;

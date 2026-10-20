@@ -1,7 +1,7 @@
 {
   "date": "2026-10-20",
-  "sourceBaseCommit": "f22415e18980d2bfd99deb3e02227e0b276e92f2",
-  "testedPaddleSHA256": "8c0705ccf3dfb049418cf3b74097e14b9bd2ad317d56196d11344b643ee7cd28",
+  "sourceBaseCommit": "446007d29c0eec5c7be26dba820464d3ea768dde",
+  "testedPaddleSHA256": "bfc2419380fd2aae8ea8635113ccaaa071950e2df4d32e7089e34be9ecaff9a4",
   "mode": "Fresh CLI build; server + two clients + spectator as separate headless macOS processes",
   "build": {
     "unity": "6000.3.2f1",
@@ -19,7 +19,7 @@
   },
   "ordinaryC": [
     {
-      "tick": 114,
+      "tick": 108,
       "rejectedDelta": 19,
       "movement": 0.2666666805744171
     }
@@ -30,7 +30,7 @@
     "distance": 0.2666667103767395
   },
   "ordinaryT": {
-    "observedCorrectionMs": 1.492959000000127,
+    "observedCorrectionMs": 1.958750000000009,
     "jump": {
       "x": 0.0,
       "y": 0.25,
@@ -53,5 +53,6 @@
   "status": "PASS",
   "testedProbeSHA256": "8c34dd5b9116830c75bcd8f338539dbf9e7e13ae82f27898c18299f22f676657",
   "unityCliCommand": "/Applications/Unity/Hub/Editor/6000.3.2f1/Unity.app/Contents/MacOS/Unity -batchmode -nographics -quit -projectPath <clean temporary project copy> -executeMethod Homework2CliAudit.Run -logFile <build log>",
-  "scope": "Automated local CLI checks only. Deadline and oral explanation are not graded by this report."
+  "scope": "Automated local CLI checks only. Deadline and oral explanation are not graded by this report.",
+  "cheatCallSite": "C loop and X axis-50 call execute directly in Update; each omits the next ordinary input packet."
 }
