@@ -81,7 +81,7 @@ Week 3 originally used client-authoritative paddles. Homework 2 replaces that au
 
 ## Validation status
 
-Unity import and compilation now succeed in **6000.3.2f1**. The actual local/network scenes and prefab assets exist. The project is connected to **MCP for Unity v10.0.0** at `http://127.0.0.1:8080/mcp`. Start its local server with `tools/start_unity_mcp.sh`; the Editor connects automatically. Editor tools and QA instrumentation are excluded or inactive during ordinary gameplay.
+Unity import and compilation now succeed in **6000.3.2f1**. The actual local/network scenes and prefab assets exist. The project is configured for **MCP for Unity v10.0.0** at `http://127.0.0.1:8080/mcp`. Start its local server with `tools/start_unity_mcp.sh`; the Editor attempts to connect automatically. A live MCP connection is optional for playing Pong. Editor tools and QA instrumentation are excluded or inactive during ordinary gameplay.
 
 The old Input System 1.12.0 package used a removed BuildTarget enum. Multiplayer Play Mode 1.6.2 duplicated a command now built into Unity 6.3. They were replaced with compatible versions and the ServerBootstrap namespace/tag API was updated. Generated scene NetworkObjects now have valid SceneIds and active-state records; the setup/repair tools use FishNet's own serialization routines.
 
@@ -89,7 +89,7 @@ Real local tests used a Unity Editor host and separate macOS Development-build c
 
 Package Manager can still show invalid-signature warnings for some official Unity packages. Unity documents a certificate-validity bug in old Editors, fixed from 6000.3.7f1. The homework explicitly requires 6000.3.2f1, so that version is retained and signature checks are not disabled. This warning is separate from compilation; see [Unity's issue](https://issuetracker-mig.prd.it.unity3d.com/issues/package-signature-validation-unexpectedly-return-an-invalid-signature-status-if-the-validation-check-is-done-after-the-code-signing-certificate-validaty-range-has-passed).
 
-The repository is [unitybtw/dgd0005-siracsimsek](https://github.com/unitybtw/dgd0005-siracsimsek), created private. Week03 includes measured 10/30/60 Hz traffic, all Section 14 answers and Section 13 vocabulary from the supplied lecture notes. Native W/S/arrows/Space input and a fresh zero-score server restart were tested. Two physical laptops/hotspot and the partner connection cards remain pending because a second laptop was unavailable. The original per-step push chronology cannot be recreated; current commits record actual final preparation.
+The repository is [unitybtw/dgd0005-siracsimsek](https://github.com/unitybtw/dgd0005-siracsimsek), currently public (verified on 21 October 2026). Week03 includes measured 10/30/60 Hz traffic, all Section 14 answers and Section 13 vocabulary from the supplied lecture notes. Native W/S/arrows/Space input and a fresh zero-score server restart were tested. Two physical laptops/hotspot and the partner connection cards remain pending because a second laptop was unavailable. The original Homework 1 per-step push chronology cannot be recreated; those commits record actual final preparation. Homework 2 has its own separate implementation-step commits and current evidence in Week04.
 
 ## Multiplayer Play Mode (separate server plus three clients)
 
