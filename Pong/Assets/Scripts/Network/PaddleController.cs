@@ -17,7 +17,6 @@ public class PaddleController : NetworkBehaviour
     private double _lastInputTime = -1;
     public int RejectedInputs;
     private System.Func<string> rejectedPanel;
-    private bool _skipNextTickInput;
     private NetworkTransform networkTransform;
 
     public override void OnStartNetwork()
@@ -117,14 +116,10 @@ public class PaddleController : NetworkBehaviour
         if (kb == null || ConnectionHud.EditingAddress) return;
         if (kb.cKey.wasPressedThisFrame)
         {
-            // Replace this tick's ordinary input, so the burst contains 20, not 21, requests.
-            _skipNextTickInput = true;
             for (int i = 0; i < 20; i++) ServerSetAxis(1f);
         }
         else if (kb.xKey.wasPressedThisFrame)
         {
-            // Send the cheat here, as in the handout; omit the next ordinary packet.
-            _skipNextTickInput = true;
             ServerSetAxis(50f);
         }
         if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
@@ -142,8 +137,7 @@ public class PaddleController : NetworkBehaviour
                 axis = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f)
                      - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
             // Zero is an input too: releasing a key must stop the server's paddle.
-            if (_skipNextTickInput) _skipNextTickInput = false;
-            else ServerSetAxis(axis);
+            ServerSetAxis(axis);
         }
         if (IsServerInitialized)
         {

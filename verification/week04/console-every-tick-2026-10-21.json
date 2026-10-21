@@ -1,0 +1,24 @@
+{
+  "ordinaryTickInputActive": true,
+  "clients": 2,
+  "cPresses": 1,
+  "before": 5,
+  "after": 25,
+  "consoleRejections": 20,
+  "serverTick": 186,
+  "date": "2026-10-21",
+  "capture": "Week04/Captures/server-console-c.png",
+  "captureSHA256": "c1b73890c679b5d5d439957029d595624e605eff31349460c34f5dd691887269",
+  "visibleCollapsedCount": 20,
+  "burst": {
+    "beforeTick": 181,
+    "tick": 182,
+    "beforeRejected": 5,
+    "afterRejected": 25,
+    "rejectedDelta": 20,
+    "movement": 0.2666666805744171
+  },
+  "noSkippedOwnerTickInput": true,
+  "note": "One C key press queues 20 axis-one RPCs; ordinary axis input is also sent every owner tick. Their arrival tick counted 20 rejects while moving only once at normal speed. The ordinary sender was neither skipped nor unsubscribed for this capture.",
+  "testedPaddleSHA256": "72e5da821cb76076494e465d4ca22e2c7b92ed93fcffbaf1ac785e1ae66ee90e"
+}

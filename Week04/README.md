@@ -44,7 +44,7 @@ Well-formedness/range and the required spectator guard run first; the time check
 2. **T:** the client writes its own visual copy, while ball collisions use the unchanged authoritative paddle in the separate server process; client position is never sent upstream.
 3. **Without the rate limit:** X still fails because the server clamps 50 to 1, and T still fails because the server controls NetworkTransform state; C still cannot increase movement speed, but its excessive requests would no longer be refused or counted.
 
-C and X call `ServerSetAxis` directly inside `Update`, after the owner guard: C loops twenty times and X sends 50 once. Each debug press omits the next ordinary tick input so a zero-axis packet does not share its outgoing batch. Normal keyboard play sends an axis, including zero, every tick; this one-input omission applies only to C/X demonstrations. Server validation and the 30 ms limit are unchanged. Arrival batching can put a prior packet in the same server tick; use counter deltas and tick evidence when interpreting a run.
+C and X call `ServerSetAxis` directly inside `Update`, after the owner guard: C loops twenty times and X sends 50 once. The owner calls `ServerSetAxis(axis)` on **every network tick**, including zero and ticks around C/X. There is no skip flag or debug exception. Server movement, validation and the 30 ms limit are unchanged. A C burst and an ordinary input can be processed in the same server tick: a counter increase of 20 can include an ordinary input as well as the rejected burst requests. The current CLI run observed +20 and normal-speed movement; the isolated 20-request check observed +19. Do not disable the ordinary sender merely to force the handout's idealized count.
 
 FishNet normally stops sending unchanged transforms. For the T demonstration, the server forces a fresh authoritative paddle snapshot each tick, including while idle. `CorrectVisualDrift` snaps visual errors over one unit to an actual received server snapshot; ordinary movement retains NetworkTransform interpolation. This increases paddle snapshot traffic. It never writes server state from the client. T is restricted to a separate client (`!IsServerInitialized`), because a listen host shares the authoritative transform and is a trusted server process, not a remote cheating client.
 
@@ -73,7 +73,7 @@ if (_lastInputTime >= 0 && now - _lastInputTime < MinInputGap)
 
 ## Measured results (18 October 2026)
 
-The final implementation was exercised through a Unity Editor **server only**, two separate macOS Development player clients, and an additional spectator. W/C/X/T/Space were also pressed using native OS keyboard input in the visible LEFT client. The optional probe's command files exercised the other player, NaN and spectator spam. Earlier Step 1/2 movement was checked in three actual Multiplayer Play Mode Editor processes.
+That revision was exercised through a Unity Editor **server only**, two separate macOS Development player clients, and an additional spectator. W/C/X/T/Space were also pressed using native OS keyboard input in the visible LEFT client. The optional probe's command files exercised the other player, NaN and spectator spam. Earlier Step 1/2 movement was checked in three actual Multiplayer Play Mode Editor processes.
 
 | Check | Observed result |
 |---|---|
@@ -91,11 +91,11 @@ The final implementation was exercised through a Unity Editor **server only**, t
 
 ### Server Console after one C
 
-![Server Console: 19 identical rejected-input messages collapsed into one row](Captures/server-console-c.png)
+![Server Console after one C with ordinary input on every tick: 20 rejected inputs](Captures/server-console-c.png)
 
-This is a real Unity Console framebuffer capture from the 20 October recheck. Collapse shows **19** identical rejections from client 0 after **one C press**, with a server-only Editor and **two separate clients** connected. Both clients' ordinary tick senders stayed subscribed throughout this capture. An opt-in probe queued the C key through Unity's Input System; it did not call the RPC directly or disable the limiter. Console was cleared immediately before the press and filtered to client 0. The framebuffer shows the C burst at tick 185 (counter 9 → 28, +19). One later ordinary packet was rejected at tick 187, so capture metadata records 20 messages since Clear by the time it was written. The image is a snapshot, not a claim that every rejection is cheating.
+This is a real Unity Console framebuffer capture from **21 October**, using a server-only Editor and two separate clients. One C press was queued through Unity's Input System. Both clients' ordinary tick senders stayed subscribed, and C/X never skip ordinary input. The counter went **5 → 25 at tick 182**, with **0.2666667** units of server movement. Collapse therefore shows **20** rejects in the image: the burst and ordinary packet share the arrival tick. This differs from the handout's idealized +19 count; it does not indicate faster movement. The exact 20-request isolated validation still produced +19, but no isolation was used to produce this screenshot. Console was cleared immediately before the press and filtered to client 0.
 
-Capture metadata and the original tick samples surrounding C: `verification/week04/console-normal-2026-10-20.json` and `verification/week04/console-normal-selected.jsonl`.
+Current capture metadata and original samples: `verification/week04/console-every-tick-2026-10-21.json` and `verification/week04/console-every-tick-selected-2026-10-21.jsonl`. The previous revision's +19 capture is archived as `Captures/server-console-c-2026-10-20.png`; it is not presented as current evidence.
 
 ## Run and explain the homework
 
@@ -126,6 +126,14 @@ A clean temporary copy of Assets/Packages/ProjectSettings was imported and built
 
 The fresh player then ran as a separate CLI server, LEFT, RIGHT and spectator. Ordinary C produced **19** rejections and 0.2666667 units of movement; X produced **0.2666667** units; T was captured at the ball locally and corrected to the server position after **1.959 ms**. NaN preserved the previous valid server axis, spectator spam moved nothing, the other paddle kept moving during an isolated C burst, maximum observed speed was **8.0000031 units/s**, and all positions stayed finite and clamped. Player logs contained no exceptions.
 
-The final recheck restores the handout's literal X placement: `ServerSetAxis(50f)` executes directly in `Update`. C and X omit only the next ordinary input packet to avoid batching a zero-axis replacement alongside the cheat. No cheat RPC is deferred to `OnTick`; server movement remains exclusively in `OnTick`. The optional probe records every frame for 200 ms around T so a very short correction cannot fall between its normal 120 Hz samples.
+This 20 October revision sent X directly in `Update`, but omitted the next ordinary tick input after C/X. It is retained as historical evidence; the 21 October recheck below removes that omission. The optional probe records every frame for 200 ms around T so a brief correction cannot fall between its normal 120 Hz samples.
 
-Compact current evidence and tested source hashes: `verification/week04/cli-audit-2026-10-20.json`. Full local logs and the CLI audit helpers are in `delivery/homework2-cli-check-2026-10-20/attempt-4/` (not committed). Earlier check attempts are retained locally; attempt 4 validates the final direct-in-Update X implementation. No earlier commit or push dates were altered. Deadline compliance and the human vocabulary/pointed-line demonstration still require separate confirmation.
+Historical evidence and tested source hashes: `verification/week04/cli-audit-2026-10-20.json`. Full local logs and the CLI audit helpers are in `delivery/homework2-cli-check-2026-10-20/attempt-4/` (not committed). Earlier check attempts are retained locally; attempt 4 validates the final direct-in-Update X implementation. No earlier commit or push dates were altered. Deadline compliance and the human vocabulary/pointed-line demonstration still require separate confirmation.
+
+## Every-tick recheck - 21 October 2026
+
+Removed `_skipNextTickInput` and all C/X assignments to it. `OnTick` now calls `ServerSetAxis(axis)` unconditionally inside the owner/non-spectator guard, even when zero, with no exception for cheat keys. C and X still execute their RPCs directly in `Update`. Server authority, movement, clamp and the per-paddle 30 ms limiter are unchanged.
+
+Unity 6000.3.2f1 CLI rebuilt the Development player with zero build errors. A separate server, LEFT, RIGHT and spectator verified ordinary movement, C, X, T, NaN, independent timestamps and court bounds. With the ordinary tick stream active, C produced **20** rejects in its arrival tick and **0.2666667** movement; an additional ordinary packet shares the tick, so this is not twenty accepted movements. X moved **0.2666667**, T corrected after **1.708 ms**, and maximum observed speed was **8.0000031 units/s**. The separate isolated 20-request check produced **19** rejects while the other paddle kept moving. That isolation is only a validation subtest; it is not used for the ordinary cheat tests or current Console screenshot. Logs contained no player exceptions.
+
+Current source hashes and measured results: `verification/week04/cli-audit-2026-10-21.json`. Full local traces, build log and audit helpers: `delivery/homework2-cli-check-2026-10-21/attempt-6/`. Earlier reports describe their dated revisions rather than the current source.

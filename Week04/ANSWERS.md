@@ -48,8 +48,8 @@ if (_lastInputTime >= 0 && now - _lastInputTime < MinInputGap)
 
 ## Server Console evidence
 
-![Server Console after one C: 19 rejections](Captures/server-console-c.png)
+![Server Console after one C with ordinary input on every tick: 20 rejects](Captures/server-console-c.png)
 
-The real Console capture uses Collapse to show 19 identical rejections after one C press, with two separate clients connected and both ordinary tick senders active. The opt-in probe queued the actual C key through Unity's Input System. C and X call their RPCs directly in Update, omitting only the next ordinary input packet to avoid adding a zero-axis packet to the same batch. The server limiter is unchanged. Full scope and measured results are in README.md.
+The current real Console capture shows 20 rejects after one C press, with two separate clients and ordinary input on every tick. C and X call their RPCs directly in Update; neither skips the next normal packet. C adds 20 requests to the normal stream, so its arrival tick may contain an ordinary request too. This observed count differs from the handout's idealized 19, but the paddle still moves only once at normal server speed. The separate isolated 20-request test produced 19 rejects; the current screenshot did not use that isolation. The 30 ms limiter is unchanged. Full measured results and scope are in README.md.
 
 The two vocabulary words and pointed-at line must also be explained orally; this document does not claim that the oral demonstration or deadline requirement has been completed.
