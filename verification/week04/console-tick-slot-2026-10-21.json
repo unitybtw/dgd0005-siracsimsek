@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "ordinaryTickInputActive": true,
+  "clients": 2,
+  "cPresses": 1,
+  "cRequests": 20,
+  "before": 9,
+  "after": 28,
+  "consoleRejections": 19,
+  "serverTick": 358,
+  "captureTiming": "after C burst, before validating next ordinary request",
+  "date": "2026-10-21",
+  "capture": "Week04/Captures/server-console-c.png",
+  "captureSHA256": "8fb888ea4e15b6ffd86ba5358b34b91bde339eb631319e0b574dce02603b11e8",
+  "visibleCollapsedCount": 19,
+  "testedPaddleSHA256": "6b65671094d7b13950aaa814d9413ba6cb9fbb2a2af52bb9f5e2ed30fb4f217a",
+  "note": "Real Console framebuffer. The temporary Editor helper observes the opt-in RPC trace, clears Console just before the first C call, and captures after all 20 C calls have completed and before validating the next ordinary request. Tick senders, server validation, counter and logs are unchanged; later ordinary rejects remain in raw logs. The Console is repainted synchronously before reading pixels."
+}

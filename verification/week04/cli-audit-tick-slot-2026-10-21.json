@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-21",
+  "sourceBaseCommit": "f5d0bc5f70cfe2fac841b127c268eaab054bf8ef",
+  "testedPaddleSHA256": "6b65671094d7b13950aaa814d9413ba6cb9fbb2a2af52bb9f5e2ed30fb4f217a",
+  "mode": "Fresh CLI build; server + two clients + spectator as separate headless macOS processes",
+  "build": {
+    "unity": "6000.3.2f1",
+    "authorityOff": true,
+    "sendToOwner": true,
+    "perPaddleTimestamp": true,
+    "gapSeconds": 0.03,
+    "tickRate": 30,
+    "build": "Succeeded",
+    "buildErrors": 0
+  },
+  "normalInput": {
+    "leftZ": 0.2666666805744171,
+    "rightZ": -0.2666666805744171
+  },
+  "ordinaryC": [
+    {
+      "tick": 115,
+      "rejectedDelta": 19,
+      "movement": 0.2666666805744171
+    }
+  ],
+  "repeatedC": [
+    {
+      "tick": 145,
+      "rejectedDelta": 19,
+      "movement": 0.2666667103767395
+    },
+    {
+      "tick": 167,
+      "rejectedDelta": 20,
+      "movement": 0.2666666507720947
+    },
+    {
+      "tick": 188,
+      "rejectedDelta": 20,
+      "movement": 0.2666666507720947
+    }
+  ],
+  "ordinaryX": {
+    "before": 1.600000023841858,
+    "after": 1.8666666746139526,
+    "distance": 0.2666666507720947
+  },
+  "ordinaryT": {
+    "observedCorrectionMs": 1.9147500000009643,
+    "jump": {
+      "x": 0.0,
+      "y": 0.25,
+      "z": 0.0
+    },
+    "corrected": {
+      "x": -7.0,
+      "y": 0.5,
+      "z": 1.8666666746139526
+    }
+  },
+  "actualCBursts": [
+    {
+      "requests": 20,
+      "rejected": 19,
+      "tick": 115
+    },
+    {
+      "requests": 20,
+      "rejected": 19,
+      "tick": 145
+    },
+    {
+      "requests": 20,
+      "rejected": 19,
+      "tick": 167
+    },
+    {
+      "requests": 20,
+      "rejected": 19,
+      "tick": 188
+    }
+  ],
+  "tickCoverage": {
+    "left": {
+      "sampledTicks": 232,
+      "firstLocalTick": 6,
+      "lastLocalTick": 237,
+      "missingTickInputs": 0,
+      "includesCAndX": true
+    },
+    "right": {
+      "sampledTicks": 193,
+      "firstLocalTick": 6,
+      "lastLocalTick": 198,
+      "missingTickInputs": 0,
+      "includesCAndX": false
+    }
+  },
+  "spectatorRejectedBeforeRateCount": true,
+  "nanPreservesPriorValidAxis": true,
+  "isolatedC": {
+    "rejectedDelta": 19,
+    "otherPaddleContinued": true
+  },
+  "maximumSpeed": 8.000003099441528,
+  "finiteAndClamped": true,
+  "status": "PASS",
+  "testedProbeSHA256": "8639d8633e4d9ab4136cc98b245e7897ad7bcb7f98f36f3b19e86b945e0a5504",
+  "testedSceneSHA256": "6f15b9d171a9875de07296abce81099f5f3fa2380a968ac6c91dadb58c71321f",
+  "tickInputPolicy": "C/X RPCs sent in Update fulfill TimeManager.LocalTick. OnTick sends keyboard input including zero if that same local tick has no submitted input; the marker is a tick number, never a skip-next-tick flag.",
+  "serverLimiter": "Unchanged 30 ms validation, counter and log. No rejected request is hidden or subtracted.",
+  "repeatedCTotalCountNote": "Two later arrival ticks include 20 total rejects, while RPC-level traces show exactly 19 rejects from the twenty C calls in each case. The remaining reject is ordinary input from adjacent-tick delivery batching.",
+  "scope": "Local actual Unity CLI build and four-process runtime checks. No deadline, oral or physical two-laptop claim."
+}

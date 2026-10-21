@@ -10,9 +10,11 @@ using UnityEngine.InputSystem.LowLevel;
 // Explicitly enabled verification only. No probe or file access during normal play.
 public class PongHomework2Probe : MonoBehaviour
 {
+    private static readonly FieldInfo SubmittedTick = typeof(PaddleController).GetField("_inputSubmittedForTick", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static PongHomework2Probe active;
     private string output, commands;
     private int lastCommand, releaseFrame;
-    private StreamWriter writer;
+    private StreamWriter writer, inputWriter;
     private double nextFrameSample, nextFlush;
     private double preciseFrameSamplingUntil;
 
@@ -30,9 +32,20 @@ public class PongHomework2Probe : MonoBehaviour
         output = path;
         commands = path + ".command.json";
         writer = new StreamWriter(output, true);
+        inputWriter = new StreamWriter(output + ".inputs.jsonl", true);
+        active = this;
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
         InstanceFinder.TimeManager.OnPostTick += Sample;
+    }
+
+    public static void RecordInput(PaddleController paddle, float axis)
+    {
+        if (active == null || active.inputWriter == null) return;
+        var data = new InputSample { tick = paddle.TimeManager.Tick, owner = paddle.OwnerId,
+            axis = axis.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            rejectedBefore = paddle.RejectedInputs };
+        active.inputWriter.WriteLine(JsonUtility.ToJson(data));
     }
 
     private void Update()
@@ -55,7 +68,7 @@ public class PongHomework2Probe : MonoBehaviour
         {
             if (c.request == "pauseTickInput")
             {
-                // Isolate an exact 20-RPC Console capture from unrelated normal input packets.
+                // Isolate the extra malformed-input validation checks from ordinary input packets.
                 // The separate server's simulation tick remains subscribed and unchanged.
                 var method = typeof(PaddleController).GetMethod("OnTick", BindingFlags.Instance | BindingFlags.NonPublic);
                 var tick = (Action)Delegate.CreateDelegate(typeof(Action), PaddleController.Local, method);
@@ -79,11 +92,13 @@ public class PongHomework2Probe : MonoBehaviour
                 || Time.realtimeSinceStartupAsDouble < preciseFrameSamplingUntil))
         {
             nextFrameSample = Time.realtimeSinceStartupAsDouble + 1.0 / 120;
-            Sample();
+            Sample(false);
         }
     }
 
-    private void Sample()
+    private void Sample() => Sample(true);
+
+    private void Sample(bool networkTick)
     {
         if (output == null) return;
         var m = InstanceFinder.NetworkManager;
@@ -95,6 +110,8 @@ public class PongHomework2Probe : MonoBehaviour
                 rejected = p.RejectedInputs, position = p.transform.position });
         var sample = new SampleData { time = Time.realtimeSinceStartupAsDouble, frame = Time.frameCount,
             tick = m.TimeManager.Tick, tickDelta = m.TimeManager.TickDelta,
+            localTick = m.TimeManager.LocalTick, networkTick = networkTick,
+            inputSubmittedForTick = PaddleController.Local == null ? -1 : Convert.ToInt64(SubmittedTick.GetValue(PaddleController.Local) ?? (object)(-1L)),
             server = m.IsServerStarted, client = m.IsClientStarted, rtt = m.TimeManager.RoundTripTime,
             localSide = PaddleController.Local == null ? -1 : PaddleController.Local.Side.Value,
             left = state == null ? -1 : state.LeftScore.Value, right = state == null ? -1 : state.RightScore.Value,
@@ -105,21 +122,27 @@ public class PongHomework2Probe : MonoBehaviour
         {
             nextFlush = Time.realtimeSinceStartupAsDouble + 0.25;
             writer.Flush();
+            inputWriter.Flush();
         }
     }
 
     private void OnDestroy()
     {
         if (InstanceFinder.TimeManager != null) InstanceFinder.TimeManager.OnPostTick -= Sample;
+        if (active == this) active = null;
         if (writer != null) writer.Dispose();
+        if (inputWriter != null) inputWriter.Dispose();
     }
 
+    [Serializable] private class InputSample { public uint tick; public int owner, rejectedBefore; public string axis; }
     [Serializable] private class Command { public int id, frames; public string key, request; public float axis; }
     [Serializable] private class PaddleSample { public int side, owner, rejected; public Vector3 position; }
     [Serializable] private class SampleData
     {
         public double time, tickDelta;
-        public uint tick;
+        public uint tick, localTick;
+        public long inputSubmittedForTick;
+        public bool networkTick;
         public long rtt;
         public int frame, localSide, left, right;
         public bool server, client, inPlay;

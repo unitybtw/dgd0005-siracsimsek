@@ -46,10 +46,12 @@ if (_lastInputTime >= 0 && now - _lastInputTime < MinInputGap)
 
 `now` comes from the server tick clock, `_lastInputTime` belongs to this paddle, and `MinInputGap` is 0.030 seconds. A request inside that interval increments the counter and returns before changing `_serverAxis`. Also explain `speed * (float)TimeManager.TickDelta`: distance per server simulation tick, independent of client frame rate or number of RPCs.
 
+The local guard `_inputSubmittedForTick != TimeManager.LocalTick` means this client sends the keyboard axis only if that local tick has no input yet; C/X may already have supplied it in Update. This client marker is not a trusted server timestamp and never replaces the server's rate check.
+
 ## Server Console evidence
 
-![Server Console after one C with ordinary input on every tick: 20 rejects](Captures/server-console-c.png)
+![Server Console after one C: 19 rejects](Captures/server-console-c.png)
 
-The current real Console capture shows 20 rejects after one C press, with two separate clients and ordinary input on every tick. C and X call their RPCs directly in Update; neither skips the next normal packet. C adds 20 requests to the normal stream, so its arrival tick may contain an ordinary request too. This observed count differs from the handout's idealized 19, but the paddle still moves only once at normal server speed. The separate isolated 20-request test produced 19 rejects; the current screenshot did not use that isolation. The 30 ms limiter is unchanged. Full measured results and scope are in README.md.
+The current real Console image shows counter 9 → 28 (+19) after one C press, with both clients active. The capture occurs after the twenty C requests complete and before the next ordinary request is validated; no sender is paused and no rejection is hidden from the raw log. C sends twenty RPCs in Update. Its first request fulfills the current local tick, so OnTick does not add a 21st request for that same tick; the next tick still gets input normally. The latest runtime trace verified 20 C requests with 19 rejected in all four C trials and no inputless ticks across 232 LEFT and 193 RIGHT ticks. The 30 ms server limiter, counter and logging are unchanged. Unrelated ordinary requests arriving in the same server tick may add further rejections; raw traces preserve them. Full measured results and scope are in README.md.
 
 The two vocabulary words and pointed-at line must also be explained orally; this document does not claim that the oral demonstration or deadline requirement has been completed.

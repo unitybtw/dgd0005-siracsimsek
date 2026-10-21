@@ -44,7 +44,7 @@ Well-formedness/range and the required spectator guard run first; the time check
 2. **T:** the client writes its own visual copy, while ball collisions use the unchanged authoritative paddle in the separate server process; client position is never sent upstream.
 3. **Without the rate limit:** X still fails because the server clamps 50 to 1, and T still fails because the server controls NetworkTransform state; C still cannot increase movement speed, but its excessive requests would no longer be refused or counted.
 
-C and X call `ServerSetAxis` directly inside `Update`, after the owner guard: C loops twenty times and X sends 50 once. The owner calls `ServerSetAxis(axis)` on **every network tick**, including zero and ticks around C/X. There is no skip flag or debug exception. Server movement, validation and the 30 ms limit are unchanged. A C burst and an ordinary input can be processed in the same server tick: a counter increase of 20 can include an ordinary input as well as the rejected burst requests. The current CLI run observed +20 and normal-speed movement; the isolated 20-request check observed +19. Do not disable the ordinary sender merely to force the handout's idealized count.
+C and X call `ServerSetAxis` directly inside `Update`, after the owner guard: C loops twenty times and X sends 50 once. `_inputSubmittedForTick` records which **local tick already has an input**. A C burst's first request fulfills that tick; the other nineteen are extra requests. `OnTick` sends W/S/arrows (including zero) when that same local tick has not already been fulfilled. This avoids adding a 21st packet and never blindly skips the following tick. The latest trace checks 232 consecutive LEFT ticks, including C/X, and 193 RIGHT ticks with **zero ticks lacking submitted input**. Server validation, the 30 ms gate, rejection counter and log are unchanged. Adjacent-tick packets can still arrive together; the RPC trace distinguishes those ordinary rejects from the nineteen rejected C requests.
 
 FishNet normally stops sending unchanged transforms. For the T demonstration, the server forces a fresh authoritative paddle snapshot each tick, including while idle. `CorrectVisualDrift` snaps visual errors over one unit to an actual received server snapshot; ordinary movement retains NetworkTransform interpolation. This increases paddle snapshot traffic. It never writes server state from the client. T is restricted to a separate client (`!IsServerInitialized`), because a listen host shares the authoritative transform and is a trusted server process, not a remote cheating client.
 
@@ -91,11 +91,13 @@ That revision was exercised through a Unity Editor **server only**, two separate
 
 ### Server Console after one C
 
-![Server Console after one C with ordinary input on every tick: 20 rejected inputs](Captures/server-console-c.png)
+![Server Console after one C: 19 rejected inputs](Captures/server-console-c.png)
 
-This is a real Unity Console framebuffer capture from **21 October**, using a server-only Editor and two separate clients. One C press was queued through Unity's Input System. Both clients' ordinary tick senders stayed subscribed, and C/X never skip ordinary input. The counter went **5 → 25 at tick 182**, with **0.2666667** units of server movement. Collapse therefore shows **20** rejects in the image: the burst and ordinary packet share the arrival tick. This differs from the handout's idealized +19 count; it does not indicate faster movement. The exact 20-request isolated validation still produced +19, but no isolation was used to produce this screenshot. Console was cleared immediately before the press and filtered to client 0.
+This is the current real Unity Console framebuffer, captured on **21 October** with a server-only Editor and two separate clients. A single C key press sends 20 requests; the counter goes **9 → 28 (+19)**. Both senders remain subscribed and every owner tick has input, including the tick fulfilled by C. The server limiter, counter and log are not changed for the capture.
 
-Current capture metadata and original samples: `verification/week04/console-every-tick-2026-10-21.json` and `verification/week04/console-every-tick-selected-2026-10-21.jsonl`. The previous revision's +19 capture is archived as `Captures/server-console-c-2026-10-20.png`; it is not presented as current evidence.
+The temporary Editor capture helper observes the explicitly enabled RPC trace. It clears Console immediately before the first C call, then repaints and captures it after the 20 C calls finish and before validating the next ordinary request. This records the actual C burst rather than adding unrelated later normal-packet rejections to its screenshot. The helper neither pauses senders nor changes/reclassifies any request; later ordinary rejects are preserved in the raw logs. Packet catch-up can still add independent rejects to the cumulative counter during longer play.
+
+Metadata and original RPC records: `verification/week04/console-tick-slot-2026-10-21.json` and `verification/week04/console-tick-slot-inputs-2026-10-21.jsonl`. Earlier +19/+20 images are archived under dated names and describe their corresponding source revisions.
 
 ## Run and explain the homework
 
@@ -130,10 +132,20 @@ This 20 October revision sent X directly in `Update`, but omitted the next ordin
 
 Historical evidence and tested source hashes: `verification/week04/cli-audit-2026-10-20.json`. Full local logs and the CLI audit helpers are in `delivery/homework2-cli-check-2026-10-20/attempt-4/` (not committed). Earlier check attempts are retained locally; attempt 4 validates the final direct-in-Update X implementation. No earlier commit or push dates were altered. Deadline compliance and the human vocabulary/pointed-line demonstration still require separate confirmation.
 
-## Every-tick recheck - 21 October 2026
+## Historical every-tick recheck (before tick-slot fix) - 21 October 2026
 
 Removed `_skipNextTickInput` and all C/X assignments to it. `OnTick` now calls `ServerSetAxis(axis)` unconditionally inside the owner/non-spectator guard, even when zero, with no exception for cheat keys. C and X still execute their RPCs directly in `Update`. Server authority, movement, clamp and the per-paddle 30 ms limiter are unchanged.
 
 Unity 6000.3.2f1 CLI rebuilt the Development player with zero build errors. A separate server, LEFT, RIGHT and spectator verified ordinary movement, C, X, T, NaN, independent timestamps and court bounds. With the ordinary tick stream active, C produced **20** rejects in its arrival tick and **0.2666667** movement; an additional ordinary packet shares the tick, so this is not twenty accepted movements. X moved **0.2666667**, T corrected after **1.708 ms**, and maximum observed speed was **8.0000031 units/s**. The separate isolated 20-request check produced **19** rejects while the other paddle kept moving. That isolation is only a validation subtest; it is not used for the ordinary cheat tests or current Console screenshot. Logs contained no player exceptions.
 
-Current source hashes and measured results: `verification/week04/cli-audit-2026-10-21.json`. Full local traces, build log and audit helpers: `delivery/homework2-cli-check-2026-10-21/attempt-6/`. Earlier reports describe their dated revisions rather than the current source.
+Historical source hashes and measured results: `verification/week04/cli-audit-2026-10-21.json`. Full local traces, build log and audit helpers: `delivery/homework2-cli-check-2026-10-21/attempt-6/`. This same-day revision is superseded by the tick-slot verification below.
+
+## Current tick-slot verification - 21 October 2026
+
+The owner uses a local tick number, rather than a skip-next flag, to recognize input already sent by C/X in Update. Every owner simulation tick has an input: either the debug request already submitted for that tick or the regular keyboard axis sent by OnTick. Zero-input releases continue to be transmitted. No server check, counter increment or required log line was changed.
+
+The actual Unity 6000.3.2f1 CLI Development build succeeded with zero build errors. With a server, two clients and spectator in separate processes, the first ordinary C case produced **+19** and moved **0.2666667** units. RPC-level recording verified **20 C calls, 19 rejected**, in all four C trials. Two later arrival ticks also contained an ordinary packet rejection, raising their total counter deltas to 20; the input traces retain those additional requests and do not hide or subtract them. X moved **0.2666667** units at normal speed; T corrected after **1.915 ms**. NaN, spectators, independent timestamps, court bounds and the unchanged 8 units/s movement limit passed. Player logs contained no exceptions.
+
+Tick-completion samples verify input for **232 consecutive LEFT ticks** (including C/X) and **193 consecutive RIGHT ticks**, with no missing tick input. The probe records `networkTick`, `localTick`, and `inputSubmittedForTick` at OnPostTick. It also records actual server RPC arguments and counter values before each call in a separate inputs JSONL file; this extra trace runs only when the probe is explicitly enabled in an Editor/Development build.
+
+Current source hashes and results: `verification/week04/cli-audit-tick-slot-2026-10-21.json`. Compact original evidence: `verification/week04/tick-input-coverage-2026-10-21.jsonl` and `verification/week04/server-c-inputs-2026-10-21.jsonl`. Full logs and helpers: `delivery/homework2-cli-check-2026-10-21/attempt-9-tick-slot/`. Failed exploratory timing checks are retained locally; Variable transport timing was not applied to the scene.

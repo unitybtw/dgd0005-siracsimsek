@@ -18,10 +18,12 @@ public class PaddleController : NetworkBehaviour
     public int RejectedInputs;
     private System.Func<string> rejectedPanel;
     private NetworkTransform networkTransform;
+    private uint? _inputSubmittedForTick;
 
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
+        _inputSubmittedForTick = null;
         TimeManager.OnTick += OnTick;
     }
     public override void OnStopNetwork()
@@ -117,10 +119,12 @@ public class PaddleController : NetworkBehaviour
         if (kb.cKey.wasPressedThisFrame)
         {
             for (int i = 0; i < 20; i++) ServerSetAxis(1f);
+            _inputSubmittedForTick = TimeManager.LocalTick;
         }
         else if (kb.xKey.wasPressedThisFrame)
         {
             ServerSetAxis(50f);
+            _inputSubmittedForTick = TimeManager.LocalTick;
         }
         if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
             transform.position = NetworkBall.Instance.transform.position;
@@ -136,8 +140,13 @@ public class PaddleController : NetworkBehaviour
             if (kb != null && !ConnectionHud.EditingAddress)
                 axis = (kb.wKey.isPressed || kb.upArrowKey.isPressed ? 1f : 0f)
                      - (kb.sKey.isPressed || kb.downArrowKey.isPressed ? 1f : 0f);
-            // Zero is an input too: releasing a key must stop the server's paddle.
-            ServerSetAxis(axis);
+            // C/X already supplied this local tick's input in Update. Never omit a later tick.
+            // Otherwise send the keyboard axis, including zero so releasing a key stops movement.
+            if (_inputSubmittedForTick != TimeManager.LocalTick)
+            {
+                ServerSetAxis(axis);
+                _inputSubmittedForTick = TimeManager.LocalTick;
+            }
         }
         if (IsServerInitialized)
         {
@@ -150,6 +159,9 @@ public class PaddleController : NetworkBehaviour
     [ServerRpc]
     private void ServerSetAxis(float axis)
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        PongHomework2Probe.RecordInput(this, axis);
+#endif
         if (float.IsNaN(axis)) return;
         axis = Mathf.Clamp(axis, -1f, 1f);
         if (Side.Value >= 2) return;
