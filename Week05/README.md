@@ -100,17 +100,36 @@ The other direction was tested too: while the guest was connected, the guest pro
 
 ## Step 7 - host for a partner, join a partner
 
-**Connection card**
+### 7a - Same-machine LAN-IP check (performed)
 
-| Field | This run |
+This is real evidence, but it is **not** a second physical laptop. It uses two processes on one Mac, with the guest dialing the Mac's LAN address instead of `127.0.0.1`.
+
+| Field | Measured value |
 |---|---|
-| Partner | not available in this session (no second laptop) |
+| Partner | — (no second laptop available; same-machine check only) |
 | Host address | `10.151.68.123` for the guest; the host's own client uses `127.0.0.1` |
 | My ClientId | **1** |
 | My side | **RIGHT (orange)** |
-| My RTT | **7-17 ms over the LAN IP path** (mode 7 ms); 13-33 ms over loopback |
+| My RTT | **7-17 ms over the LAN IP path** (mode 7 ms); 7-33 ms over loopback, mode 20 ms |
 | Connected first try? | **Yes**; no fix line needed |
-| Scope | Two processes on one Mac, one of them using the machine's LAN address. This is **not** the required two-physical-laptop card. |
+| Scope | Two processes on one Mac. This does **not** replace the required two-laptop card. |
+
+### 7b - Physical partner card (to fill in class)
+
+Fill this with the real partner and the real second machine. Do not copy the 7a row into it as if it were a two-laptop test.
+
+| Field | Value |
+|---|---|
+| Partner's name | |
+| Partner's device / OS | |
+| Network (hotspot / LAN) | |
+| Host address I gave the partner | |
+| My ClientId / side | |
+| My RTT | |
+| Partner's ClientId / side | |
+| Partner's RTT | |
+| Connected first try? | yes / no |
+| If no, which fix line in Section 4 | |
 
 The correct fix line if a real partner cannot connect is the first one in Section 4: read the host's IP again (Notes 2.1) and confirm the host Console says `[Server] Started`; then check the host firewall for UDP 7770, Private + Public.
 
@@ -145,7 +164,7 @@ The correct fix line if a real partner cannot connect is the first one in Sectio
 - [x] `ConnectionLogger`: `[Host]` line.
 - [x] `PaddleController`: both registrations guarded; `All.Count` shown in the HUD.
 - [x] `Week05/README.md`: Step 3 callback order, Step 5 RTT/tick-10 observations, connection card, three Step 8 lines, self-review answers.
-- [ ] Physical two-laptop partner card: still needs a real partner and a real LAN/hotspot. The values above are a same-machine LAN-IP check, not a substitute.
+- [ ] Physical two-laptop partner card: the real 7a check and the empty 7b template are in the README; it still needs a real partner and a real LAN/hotspot before it can be ticked.
 - [ ] Push: `Week 5: Pong on a host + connection card`.
 
 ## Reproduce
