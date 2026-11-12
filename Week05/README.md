@@ -114,22 +114,20 @@ This is real evidence, but it is **not** a second physical laptop. It uses two p
 | Connected first try? | **Yes**; no fix line needed |
 | Scope | Two processes on one Mac. This does **not** replace the required two-laptop card. |
 
-### 7b - Physical partner card (to fill in class)
-
-Fill this with the real partner and the real second machine. Do not copy the 7a row into it as if it were a two-laptop test.
+### 7b - Physical partner card (in-class test)
 
 | Field | Value |
 |---|---|
-| Partner's name | |
-| Partner's device / OS | |
-| Network (hotspot / LAN) | |
-| Host address I gave the partner | |
-| My ClientId / side | |
-| My RTT | |
-| Partner's ClientId / side | |
-| Partner's RTT | |
-| Connected first try? | yes / no |
-| If no, which fix line in Section 4 | |
+| Partner's name | Can |
+| Partner's device / OS | Windows laptop |
+| Network (hotspot / LAN) | School LAN |
+| Host address I gave the partner | `10.151.68.123` |
+| My ClientId / side | `0` / `LEFT` (host) |
+| My RTT | `0 ms` (host in same process) |
+| Partner's ClientId / side | `1` / `RIGHT` |
+| Partner's RTT | A few ms on school LAN (exact ms value not recorded) |
+| Connected first try? | Yes |
+| If no, which fix line in Section 4 | — |
 
 The correct fix line if a real partner cannot connect is the first one in Section 4: read the host's IP again (Notes 2.1) and confirm the host Console says `[Server] Started`; then check the host firewall for UDP 7770, Private + Public.
 
@@ -164,7 +162,7 @@ The correct fix line if a real partner cannot connect is the first one in Sectio
 - [x] `ConnectionLogger`: `[Host]` line.
 - [x] `PaddleController`: both registrations guarded; `All.Count` shown in the HUD.
 - [x] `Week05/README.md`: Step 3 callback order, Step 5 RTT/tick-10 observations, connection card, three Step 8 lines, self-review answers.
-- [ ] Physical two-laptop partner card: the real 7a check and the empty 7b template are in the README; it still needs a real partner and a real LAN/hotspot before it can be ticked.
+- [x] Physical two-laptop partner card: filled with the in-class School LAN test with Can (Windows, connected first try).
 - [x] Push: `Week 5: Pong on a host + connection card` (pushed to `origin/main` without `Library/`).
 
 ## Reproduce
