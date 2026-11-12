@@ -1,5 +1,7 @@
 # Verification - 2026-10-14
 
+Week 5 host evidence is in `verification/week05/`: one macOS Development build, a host process (`-pongServer -pongClient`) and a guest process, 30 Hz and 10 Hz rallies, host/guest leave tests and a same-machine LAN-IP connection. `summary.json` records the values and the committed `*-smoke.jsonl` traces are the raw source; `.log` files are excluded as machine logs. This is not evidence from two physical laptops.
+
 Unity **6000.3.2f1** successfully imported and compiled the project and FishNet RPC/SyncType code generation. The actual local/network scenes and paddle/ball prefab assets are saved. A macOS Development build at `/private/tmp/PongQA.app` built successfully. Unity MCP v10.0.0 connected to the Editor and was used for Console, Play Mode, menu calls and screenshots.
 
 `results.json` records passing checks from actual local multiplayer runs. An Editor host and two separate headless Development-build clients verified LEFT/RIGHT/SPECTATOR, one ball on each client, a server-approved serve, replicated motion and score, goal ObserversRpc to all, YOU SERVE TargetRpc to RIGHT only, and reconnect receiving 1:0 plus six feed entries. `final-right`, `final-spectator` and `final-rejoin` logs contain those checks. Raket movement was driven through a QA menu to z=3, then observed in the remote client; this tests NetworkTransform transport rather than physical keyboard focus.

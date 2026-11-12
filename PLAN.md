@@ -63,3 +63,9 @@ Yerel starter W/S-oklar ve gol logları, gerçek owner W ve Space ile ağ oyunu,
 ## 18 Ekim 2026 - Homework 2
 
 Yeni ödevin beş adımı mevcut proje üzerinde uygulanıyor. Paddle ve Ball sunucu yetkisinde; yön girdisi her tick RPC ile gönderiliyor, sunucuda doğrulanıp 30 ms aralıkla kabul ediliyor. C/X/T ve oyuncu başına ret sayacı eklendi. Week04/README.md yeni teslimin cevaplarını ve doğrulama kapsamını içerir. Önceki Week03 ölçümleri tarihsel kanıttır. Bulut dağıtımı yeni Homework2.pdf'nin beş zorunlu adımında yoktur; ders notlarındaki genel bulut anlatımı dağıtım yapılmış olduğu anlamına gelmez.
+
+## 12 Kasım 2026 - Week 5 listen host
+
+`ConnectionHud` içine yalnızca sunucu ve istemci kapalıyken görünen **Start Host**, ikisi de açıkken görünen **Stop Host** eklendi. Host önce sunucuyu, sonra `127.0.0.1` üzerindeki istemciyi aynı süreçte başlatıyor; Stop Host istemciyi sonra sunucuyu kapatıyor. `ConnectionLogger` istemci `Started` ve sunucu `Started` olduğunda `[Host]` satırını yazıyor. HUD artık `Paddles in All` sayısını gösteriyor; `PaddleController.Register` iki callback'te de listeye bir kez ekliyor.
+
+Tek Mac'te iki ayrı Development süreciyle host + guest, 30 Hz ve 10 Hz ralli, host'un ayrılması, guest'in ayrılması ve LAN IP (`10.151.68.123`) yolu çalıştırıldı. Gerçek değerler ve sınırlamalar `Week05/README.md` ile `verification/week05/summary.json` içinde. İki fiziksel laptop ve gerçek partner kartı hâlâ yapılmadı; aynı makinedeki LAN IP testi onun yerine sayılmaz.

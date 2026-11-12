@@ -46,6 +46,8 @@ public class PaddleController : NetworkBehaviour
         if (rejectedPanel != null) ConnectionHud.Panels.Remove(rejectedPanel);
         rejectedPanel = null;
     }
+    // A host runs OnStartServer and OnStartClient for the same object. Register once so
+    // the host does not count its own paddle twice (Notes 1.2).
     private void Register() { if (!All.Contains(this)) All.Add(this); }
 
     public override void OnStartServer()

@@ -6,6 +6,8 @@ Each player owns one spawned paddle and sends only an input axis to its owner-on
 
 **Homework 2:** [Week04/README.md](Week04/README.md) contains the Step 3/4/5 answers, real C/X/T measurements, server Console capture, two vocabulary words and lecture self-review. Evidence is in `verification/week04/`. C sends 20 inputs, X sends 50, and T teleports the local visual copy in a separate client. Debug keys stay in the project. T does not run in a listen host, which shares the trusted server transform.
 
+**Week 5:** [Week05/README.md](Week05/README.md) adds the listen-host path: one **Start Host** click starts the server and joins it as client 0, **Stop Host** stops the client then the server, `ConnectionLogger` prints the `[Host]` line, and the HUD shows `Paddles in All` so the duplicate-registration bug is visible. The one-machine host/guest evidence, the 10 Hz comparison and the self-review answers are in that file; the physical two-laptop connection card is still pending.
+
 ## Run server and client (three lines)
 
 1. In Unity Hub, add `Pong/`, select 6000.3.2f1, open it, let packages/scripts import, then open `Assets/Scenes/Pong.unity`.
@@ -21,6 +23,7 @@ Two active players are required to serve. The ball starts grey; the LEFT player 
 - `Pong/Assets/Scripts/Tools/`: replacement ConnectionHud and ServerBootstrap, because the course Tools folder was not supplied.
 - `Pong/Assets/Editor/PongProjectSetup.cs`: creates the local and network scenes, paddle/ball prefabs, manager, references and build scene on first successful Editor import. The menu **Pong > Create missing scenes and prefabs** can also run it. It preserves an existing Pong scene.
 - `Week04/README.md`: current Homework 2 answers, measurements, screenshots and run instructions.
+- `Week05/README.md`: Week 5 listen-host steps, real host/guest and 10 Hz evidence, connection card and self-review.
 - `Week03/README.md`: historical Homework 1 answers and remaining physical-network measurement cards.
 - `PLAN.md`: the full implementation, validation and hand-in plan in Turkish.
 - `verification/`: static compiler evidence and remaining validation scope.

@@ -80,22 +80,48 @@ public class ConnectionHud : MonoBehaviour
         address = GUILayout.TextField(address, 100);
         GUI.enabled = true;
         EditingAddress = GUI.GetNameOfFocusedControl() == "HostAddress";
+        bool serverUp = manager.IsServerStarted;
+        bool clientUp = manager.IsClientStarted;
+        bool bothStopped = !serverUp && !clientUp;
+        bool hostUp = serverUp && clientUp;
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button(manager.IsServerStarted ? "Stop Server" : "Start Server", GUILayout.Height(32)))
+        if (hostUp)
         {
-            GUI.FocusControl(null);
-            if (manager.IsServerStarted) manager.ServerManager.StopConnection(true);
-            else manager.ServerManager.StartConnection();
+            if (GUILayout.Button("Stop Host", GUILayout.Height(32)))
+            {
+                GUI.FocusControl(null);
+                manager.ClientManager.StopConnection();
+                manager.ServerManager.StopConnection(true);
+            }
         }
-        if (GUILayout.Button(manager.IsClientStarted ? "Stop Client" : "Start Client", GUILayout.Height(32)))
+        else
         {
-            GUI.FocusControl(null);
-            if (manager.IsClientStarted) manager.ClientManager.StopConnection();
-            else { manager.TransportManager.Transport.SetClientAddress(address.Trim()); manager.ClientManager.StartConnection(); }
+            if (GUILayout.Button(serverUp ? "Stop Server" : "Start Server", GUILayout.Height(32)))
+            {
+                GUI.FocusControl(null);
+                if (serverUp) manager.ServerManager.StopConnection(true);
+                else manager.ServerManager.StartConnection();
+            }
+            // One click, one process: the server starts first, then the local client joins it.
+            if (bothStopped && GUILayout.Button("Start Host", GUILayout.Height(32)))
+            {
+                GUI.FocusControl(null);
+                manager.ServerManager.StartConnection();
+                ushort port = manager.TransportManager.Transport.GetPort();
+                if (port == 0) port = 7770;
+                manager.ClientManager.StartConnection("127.0.0.1", port);
+            }
+            if (GUILayout.Button(clientUp ? "Stop Client" : "Start Client", GUILayout.Height(32)))
+            {
+                GUI.FocusControl(null);
+                if (clientUp) manager.ClientManager.StopConnection();
+                else { manager.TransportManager.Transport.SetClientAddress(address.Trim()); manager.ClientManager.StartConnection(); }
+            }
         }
         GUILayout.EndHorizontal();
         var local = PaddleController.Local;
         GUILayout.Label(local == null ? "You: not connected" : $"You: client {local.Owner.ClientId} / {PaddleController.SideName(local.Side.Value)}", body);
+        GUILayout.Label($"Paddles in All: {PaddleController.All.Count}", body);
         GUILayout.Label($"RTT {manager.TimeManager.RoundTripTime} ms   Tick {manager.TimeManager.LocalTick}\nRate {manager.TimeManager.TickRate} Hz / UDP 7770", body);
         GUILayout.Label($"Server IN {serverIn:F0} / OUT {serverOut:F0} B/s\nClient IN {clientIn:F0} / OUT {clientOut:F0} B/s", body);
         GUILayout.Space(12);

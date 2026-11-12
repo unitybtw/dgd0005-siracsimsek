@@ -1,0 +1,222 @@
+{
+  "date": "2026-11-12",
+  "environment": "One macOS machine, Unity 6000.3.2f1, macOS Development build /private/tmp/PongQA.app, FishNet 4.7.3R, Tugboat UDP 7770. Host = -pongServer -pongClient; guest = -pongClient -pongAddress 127.0.0.1. Not two physical laptops.",
+  "host_line": "[Host] This process is the server AND a client. RTT is 0 ms.",
+  "host_alone": {
+    "paddles_in_All": 1,
+    "source": "rally30-host-smoke.jsonl first samples"
+  },
+  "guest": {
+    "client_id": 1,
+    "side": "RIGHT",
+    "paddles_in_All_on_host": 2
+  },
+  "rtt_30Hz": {
+    "host": {
+      "samples": 720,
+      "values_ms": [
+        0,
+        33
+      ],
+      "median_ms": 33.0,
+      "mode_ms": 33
+    },
+    "guest": {
+      "samples": 2489,
+      "values_ms": [
+        0,
+        7,
+        11,
+        13,
+        17,
+        20,
+        27,
+        33
+      ],
+      "median_ms": 20,
+      "mode_ms": 20
+    }
+  },
+  "rtt_10Hz": {
+    "host": {
+      "samples": 244,
+      "values_ms": [
+        0,
+        100
+      ],
+      "median_ms": 100.0,
+      "mode_ms": 100
+    },
+    "guest": {
+      "samples": 2107,
+      "values_ms": [
+        0,
+        20,
+        25,
+        33,
+        40
+      ],
+      "median_ms": 0,
+      "mode_ms": 0
+    }
+  },
+  "authoritative_ball_step": {
+    "30Hz": {
+      "samples": 552,
+      "median_units": 0.238,
+      "mean_units": 0.231
+    },
+    "10Hz": {
+      "samples": 177,
+      "median_units": 0.7,
+      "mean_units": 0.685
+    }
+  },
+  "rally_30Hz": {
+    "host": {
+      "samples": 47,
+      "inPlay": 37,
+      "scores": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_paddles": 2,
+      "z_range": [
+        [
+          -4.0,
+          4.0
+        ],
+        [
+          -4.0,
+          4.0
+        ]
+      ]
+    },
+    "guest": {
+      "samples": 38,
+      "inPlay": 37,
+      "scores": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_paddles": 2,
+      "z_range": [
+        [
+          -4.0,
+          4.0
+        ],
+        [
+          -4.0,
+          4.0
+        ]
+      ]
+    }
+  },
+  "rally_10Hz": {
+    "host": {
+      "samples": 48,
+      "inPlay": 36,
+      "scores": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "max_paddles": 2,
+      "z_range": [
+        [
+          -4.0,
+          4.0
+        ],
+        [
+          -4.0,
+          4.0
+        ]
+      ]
+    },
+    "guest": {
+      "samples": 38,
+      "inPlay": 37,
+      "scores": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "max_paddles": 2,
+      "z_range": [
+        [
+          -4.0,
+          4.0
+        ],
+        [
+          -3.801,
+          4.0
+        ]
+      ]
+    }
+  },
+  "host_leaves": {
+    "guest_states": [
+      "Stopping",
+      "Stopped"
+    ],
+    "guest_localSide_after": -1,
+    "guest_paddles_after": 0
+  },
+  "guest_leaves": {
+    "host_log": [
+      "[Server] client 1 Stopped; clients 2",
+      "[Server] Client 1 left RIGHT"
+    ],
+    "host_paddles_before": 2,
+    "host_paddles_after": 1,
+    "ball_reset": true,
+    "source": "guestleave-host.log, guestleave-host-smoke.jsonl"
+  },
+  "lan_ip_check": {
+    "address": "10.151.68.123",
+    "client_id": 1,
+    "side": "RIGHT",
+    "guest_rtt": {
+      "samples": 1849,
+      "values_ms": [
+        0,
+        7,
+        8,
+        11,
+        13,
+        17
+      ],
+      "median_ms": 7,
+      "mode_ms": 7
+    },
+    "guest_paddles": 2
+  },
+  "limitations": [
+    "UI clicks were not automated; the same host path was run with -pongServer -pongClient in a Development build.",
+    "The guest was a separate process on the same Mac, not Multiplayer Play Mode and not a second physical laptop.",
+    "The required physical partner connection card is not filled from this run.",
+    "Raw .log and 120 Hz probe traces were used to derive these values but are excluded by .gitignore as machine logs; the smoke traces and this summary are committed."
+  ]
+}

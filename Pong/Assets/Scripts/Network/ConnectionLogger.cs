@@ -16,7 +16,13 @@ public class ConnectionLogger : MonoBehaviour
         manager.ClientManager.OnClientConnectionState += ClientState;
     }
     private void ServerState(ServerConnectionStateArgs args) => Debug.Log($"[Server] {args.ConnectionState}");
-    private void ClientState(ClientConnectionStateArgs args) => Debug.Log($"[Client] {args.ConnectionState}");
+    private void ClientState(ClientConnectionStateArgs args)
+    {
+        Debug.Log($"[Client] {args.ConnectionState}");
+        // In a host, the client joined a server in the same process, so its RTT is 0.
+        if (args.ConnectionState == LocalConnectionState.Started && manager.ServerManager.Started)
+            Debug.Log("[Host] This process is the server AND a client. RTT is 0 ms.");
+    }
     private void RemoteState(NetworkConnection conn, RemoteConnectionStateArgs args) =>
         Debug.Log($"[Server] client {conn.ClientId} {args.ConnectionState}; clients {manager.ServerManager.Clients.Count}");
     private void OnDestroy()
