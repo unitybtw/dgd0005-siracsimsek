@@ -73,7 +73,10 @@ public class ConnectionHud : MonoBehaviour
         GUILayout.BeginArea(new Rect(16, 16, 300, Screen.height / scale - 32), GUI.skin.box);
         scroll = GUILayout.BeginScrollView(scroll);
         GUILayout.Label("PONG / NETWORK LAB", title);
-        GUILayout.Label($"Server: {(manager.IsServerStarted ? "ONLINE" : "OFFLINE")}   Client: {(manager.IsClientStarted ? "ONLINE" : "OFFLINE")}", body);
+        string serverStatus = manager.IsServerStarted
+            ? $"ONLINE ({manager.ServerManager.Clients.Count} client(s))"
+            : "OFFLINE";
+        GUILayout.Label($"Server: {serverStatus}   Client: {(manager.IsClientStarted ? "ONLINE" : "OFFLINE")}", body);
         GUILayout.Label("Host IP / localhost", body);
         GUI.SetNextControlName("HostAddress");
         GUI.enabled = !manager.IsClientStarted;

@@ -31,7 +31,7 @@ Starting a server and then a client in one process produces a host. In the recor
 [Client] I am client 0, side LEFT
 ```
 
-The host owns client 0 and the LEFT paddle (`Paddles in All: 1` before a guest joins). The local client HUD showed `Client: ONLINE`, `my id = 0` and RTT 0.
+The host owns client 0 and the LEFT paddle (`Paddles in All: 1` before a guest joins). The local client HUD showed `Server: ONLINE (1 client(s))`, `Client: ONLINE`, `You: client 0 / LEFT`, `Paddles in All: 1` and `RTT 0 ms`.
 
 ## Step 2 - Start Host and the [Host] line
 
@@ -67,7 +67,7 @@ The checked guest was a separate macOS Development process on the same Mac. It i
 Observed:
 
 - Host: `[Server] client 1 Started; clients 2`, then `[Server] client 1 assigned RIGHT`, `[Server] Client 1 joined as RIGHT`.
-- Guest: `[Client] I am client 1, side RIGHT`, HUD `my id = 1`, RTT above 0.
+- Guest: `[Client] I am client 1, side RIGHT`, HUD `You: client 1 / RIGHT`, RTT above 0.
 - Both windows: two paddles, one ball, the shared score. The guest moves RIGHT; the host moves LEFT. Both paddles reached `z = -4.0 ... +4.0` in the automated rally.
 
 ## Step 5 - the host wins
@@ -165,7 +165,7 @@ The correct fix line if a real partner cannot connect is the first one in Sectio
 - [x] `PaddleController`: both registrations guarded; `All.Count` shown in the HUD.
 - [x] `Week05/README.md`: Step 3 callback order, Step 5 RTT/tick-10 observations, connection card, three Step 8 lines, self-review answers.
 - [ ] Physical two-laptop partner card: the real 7a check and the empty 7b template are in the README; it still needs a real partner and a real LAN/hotspot before it can be ticked.
-- [ ] Push: `Week 5: Pong on a host + connection card`.
+- [x] Push: `Week 5: Pong on a host + connection card` (pushed to `origin/main` without `Library/`).
 
 ## Reproduce
 
