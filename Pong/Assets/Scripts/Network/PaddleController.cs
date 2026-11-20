@@ -130,6 +130,8 @@ public class PaddleController : NetworkBehaviour
         }
         if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
             transform.position = NetworkBall.Instance.transform.position;
+        if (kb.gKey.wasPressedThisFrame && GameState.Instance != null)
+            GameState.Instance.LeftScore.Value = 9;
         if (Side.Value >= 2) return;
         if (kb.spaceKey.wasPressedThisFrame) RequestServe();
     }
