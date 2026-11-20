@@ -14,7 +14,9 @@ public class PaddleController : NetworkBehaviour
     [SerializeField] private float speed = 8f;
     private float _serverAxis;
     private const double MinInputGap = 0.030;
+    private const double MinServeGap = 1.0;
     private double _lastInputTime = -1;
+    private double _lastServeTime = -1;
     public int RejectedInputs;
     private System.Func<string> rejectedPanel;
     private NetworkTransform networkTransform;
@@ -55,6 +57,7 @@ public class PaddleController : NetworkBehaviour
         base.OnStartServer();
         _serverAxis = 0f;
         _lastInputTime = -1;
+        _lastServeTime = -1;
         RejectedInputs = 0;
         RemoveRejectedPanel();
         rejectedPanel = () => $"Rejected inputs (paddle {OwnerId}): {RejectedInputs}";
@@ -184,12 +187,22 @@ public class PaddleController : NetworkBehaviour
     {
         var state = GameState.Instance;
         var ball = NetworkBall.Instance;
-        if (state == null || ball == null || Side.Value >= 2 || Side.Value != state.ServingSide.Value || ball.InPlay.Value) return;
+        if (state == null || ball == null || Side.Value >= 2) return;
+        double now = TimeManager.TicksToTime(TimeManager.Tick);
+        if (_lastServeTime >= 0 && now - _lastServeTime < MinServeGap)
+        {
+            TargetRefused(Owner, "TOO FAST");
+            return;
+        }
+        _lastServeTime = now;
+        if (Side.Value != state.ServingSide.Value || ball.InPlay.Value) return;
         if (!All.Exists(p => p != null && p.IsServerInitialized && p.Side.Value == 0)
             || !All.Exists(p => p != null && p.IsServerInitialized && p.Side.Value == 1)) return;
         ball.Serve(1 - Side.Value);
         GameState.Announce($"{SideName(Side.Value)} served");
     }
+    [TargetRpc]
+    private void TargetRefused(NetworkConnection target, string why) => ConnectionHud.Flash(why);
     [ObserversRpc]
     public void AnnounceGoal(int left, int right) => ConnectionHud.Flash($"{SideName(Side.Value)} scored! {left} : {right}");
     [TargetRpc]

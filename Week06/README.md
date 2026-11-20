@@ -15,3 +15,10 @@ Tested with a Development-build listen host (`Start Host`) and a separate Develo
 | `G` | Nothing (`Host` score stayed `0 : 0`) | Host and guest scores remain `0 : 0`; guest logs FishNet's `LogServerNotActiveWarning()` |
 
 **Why did the host never see `G`'s SyncVar write?** FishNet `SyncVar<T>` uses server-authoritative write permissions by default: writing `LeftScore.Value = 9` on a client where `IsServerInitialized` is false is rejected locally by `SyncVar.SetValue` (logging `LogServerNotActiveWarning`), sends no packet to the server, and leaves the authoritative score unchanged.
+
+## Step 2 - Serve rate limit
+
+In `PaddleController.RequestServe`, added per-paddle rate limiting (`MinServeGap = 1.0`, instance field `_lastServeTime = -1`) after the null check and before the `ServingSide` check, using `[TargetRpc] private void TargetRefused(NetworkConnection target, string why)` to flash `TOO FAST` only to the requesting owner.
+
+- Guest double-tapping Space within `0.15 s` flashed `[Client] Flash: TOO FAST` on the guest only; the host HUD did not flash.
+- The host could immediately serve (`InPlay = true`) because `_lastServeTime` is an instance field (one timer per paddle, not `static`), and after waiting more than `1.0 s` the guest's next Space press was no longer refused with `TOO FAST`.
