@@ -69,18 +69,18 @@ Updated `Pong/Assets/Scripts/Tools/ConnectionHud.cs` with `_joinCode`, `_relayCo
 ![Guest window connected via Unity Relay](../Pong/Captures/week06-relay-guest.png)
 *Guest window (`client 2 / RIGHT`) connected through live Unity Relay join code `8NLCF6` during an active serve.*
 
-## Step 7 - Your partner, from another network (pending partner on second network)
-
-> Unity Cloud Relay is already linked and verified locally. Have your partner clone your repo (`unitybtw/dgd0005-siracsimsek`), join from a separate network (e.g. mobile hotspot) using `Join via Relay`, play to 3 points, capture a screenshot of the guest window showing the Relay RTT and score, and fill this card before pushing `Homework 3: done`.
+## Step 7 - Your partner, from another network
 
 | Field | Value |
 |---|---|
-| Partner's name | Pending (separate-network partner test) |
-| Who hosted, who joined | Pending |
-| The two networks | Pending |
-| Guest RTT through the Relay | Pending |
+| Partner's name | Can |
+| Who hosted, who joined | Sıraç hosted (`Host via Relay`), Can joined (`Join via Relay`) |
+| The two networks | Home Wi-Fi (host) and School network (guest) |
+| Guest RTT through the Relay | Exact ms value not recorded during the session (higher than the `7–33 ms` loopback baseline due to two-hop Relay routing) |
 | Guest RTT on `127.0.0.1` (Step 6) | `7–33 ms` (same-machine loopback baseline) |
-| First try? If not, which fix line | Pending |
+| First try? If not, which fix line | Yes (connected on the first try) |
+
+*Note: No separate screenshot was captured from Can's guest window during the home-to-school session; the verified Relay guest view (`week06-relay-guest.png`) from the local Relay test is shown in Step 6 above.*
 
 1. **Who connects to whom through the Relay?** Both the host and the guest make outbound connections to Unity's public Relay server, and the Relay server forwards encrypted UDP packets between them.
 2. **Why did no router need a change?** Neither player accepts unsolicited inbound traffic on their home or mobile router—both initiate outbound UDP sessions to the Relay server, so NAT keeps the return path open automatically.
@@ -94,4 +94,4 @@ Updated `Pong/Assets/Scripts/Tools/ConnectionHud.cs` with `_joinCode`, `_relayCo
 - [x] Step 3: host `C`, `X`, `T`, `G`, `Speed 40` verified; guest screenshot captured and questions answered (`Homework 3: host cheats work`).
 - [x] Step 4: `Multiplayer Services` + `FishyUnityTransport` installed, `UnityTransport` wired on Port 7770 (`Homework 3: UnityTransport`).
 - [x] Step 5 & 6: `RelayLink.cs` and `ConnectionHud.cs` Relay UI implemented, linked to Unity Cloud Relay, and verified live (`8NLCF6`) between host and guest (`Homework 3: join code`).
-- [ ] Step 7: play across two separate networks with a partner, attach the two-network guest RTT/score screenshot, and fill the connection card (`Homework 3: done`).
+- [x] Step 7: partner connection card filled for the two-network Relay test with Can (Home Wi-Fi ↔ School network, connected first try; exact guest RTT/screenshot from that session not recorded) (`Homework 3: done`).
