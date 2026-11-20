@@ -22,3 +22,22 @@ In `PaddleController.RequestServe`, added per-paddle rate limiting (`MinServeGap
 
 - Guest double-tapping Space within `0.15 s` flashed `[Client] Flash: TOO FAST` on the guest only; the host HUD did not flash.
 - The host could immediately serve (`InPlay = true`) because `_lastServeTime` is an instance field (one timer per paddle, not `static`), and after waiting more than `1.0 s` the guest's next Space press was no longer refused with `TOO FAST`.
+
+## Step 3 - The host cheats
+
+Removed the `!IsServerInitialized` restriction on `T` in `PaddleController.Update` so `T` executes on the host as well. Pressing `C`, `X`, `T`, `G` and changing `speed` from `8` to `40` on the host window produced:
+
+| On the host | Result | Why |
+|---|---|---|
+| `C` | Burst inputs rejected on the server; normal paddle speed (`8`) | `ServerSetAxis` is a `ServerRpc` request, so the 30 ms server rate check runs on the host too |
+| `X` | Normal speed (`8`) | `ServerSetAxis` clamps `axis` to `[-1, 1]` on the server for the host too |
+| `T` | Host's LEFT paddle jumps to `(0, 0.25, 0)` and stays there in both windows | Direct write to `transform.position` on the host writes the server's authoritative position |
+| `G` | `LEFT` score becomes `9` in both host and guest windows | Direct write to `LeftScore.Value = 9` on the host runs with `IsServerInitialized == true` and replicates |
+| `Speed 40` | Host's paddle moves five times faster (measured up to `56.0` u/s across frames; `40.0` u/s server step) in both windows | The server simulation in `OnTick` reads the host's own serialized `speed` field directly |
+
+![Guest window after host pressed G and T](../Pong/Captures/week06-guest-host-cheats.png)
+*Guest window (`client 1 / RIGHT`) showing `LEFT 9 : 0 RIGHT` after the host pressed `G`, and the host's blue paddle staying at the ball (`x = 0`) after the host pressed `T`.*
+
+1. **Difference between `C`/`X` and `T`/`G` on the host:** `C` and `X` went through the `ServerRpc` (`ServerSetAxis`) so the server's rate limit and clamp still rejected/clamped them, whereas `T` and `G` wrote directly to the object's transform and `SyncVar` inside the process that owns server authority.
+2. **Which host cheats could a guest see?** The guest sees all authoritative outcomes replicated from the server—the host's `5x` paddle speed, the `T` teleport to the ball, and the `G` score jump to `9`.
+3. **Ranked game with strangers — host or dedicated server? Why?** A dedicated server, because on a listen host one player's machine holds server authority and can directly tamper with game state, speed, or rules without any server validation stopping it.

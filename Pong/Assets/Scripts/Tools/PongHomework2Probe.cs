@@ -66,6 +66,17 @@ public class PongHomework2Probe : MonoBehaviour
         }
         else if (!string.IsNullOrEmpty(c.request))
         {
+            if (c.request == "setSpeed")
+            {
+                typeof(PaddleController).GetField("speed", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(PaddleController.Local, c.axis);
+                return;
+            }
+            if (c.request == "capture" && !string.IsNullOrEmpty(c.capturePath))
+            {
+                ScreenCapture.CaptureScreenshot(c.capturePath);
+                return;
+            }
             if (c.request == "pauseTickInput")
             {
                 // Isolate the extra malformed-input validation checks from ordinary input packets.
@@ -135,7 +146,7 @@ public class PongHomework2Probe : MonoBehaviour
     }
 
     [Serializable] private class InputSample { public uint tick; public int owner, rejectedBefore; public string axis; }
-    [Serializable] private class Command { public int id, frames; public string key, request; public float axis; }
+    [Serializable] private class Command { public int id, frames; public string key, request, capturePath; public float axis; }
     [Serializable] private class PaddleSample { public int side, owner, rejected; public Vector3 position; }
     [Serializable] private class SampleData
     {

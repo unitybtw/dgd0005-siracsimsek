@@ -131,7 +131,7 @@ public class PaddleController : NetworkBehaviour
             ServerSetAxis(50f);
             _inputSubmittedForTick = TimeManager.LocalTick;
         }
-        if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized && !IsServerInitialized)
+        if (kb.tKey.wasPressedThisFrame && NetworkBall.Instance != null && IsClientInitialized)
             transform.position = NetworkBall.Instance.transform.position;
         if (kb.gKey.wasPressedThisFrame && GameState.Instance != null)
             GameState.Instance.LeftScore.Value = 9;
