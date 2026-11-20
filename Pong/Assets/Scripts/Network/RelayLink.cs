@@ -18,8 +18,12 @@ public static class RelayLink
         if (UnityServices.State == ServicesInitializationState.Uninitialized)
         {
             var options = new InitializationOptions();
+            var args = Environment.GetCommandLineArgs();
+            int profileIdx = Array.IndexOf(args, "-pongProfile");
+            if (profileIdx >= 0 && profileIdx + 1 < args.Length)
+                options.SetProfile(args[profileIdx + 1]);
 #if UNITY_EDITOR
-            if (!CurrentPlayer.IsMainEditor)
+            else if (!CurrentPlayer.IsMainEditor)
                 options.SetProfile("guest");
 #endif
             await UnityServices.InitializeAsync(options);

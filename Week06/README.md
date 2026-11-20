@@ -47,7 +47,7 @@ Removed the `!IsServerInitialized` restriction on `T` in `PaddleController.Updat
 - Installed **Multiplayer Services** (`com.unity.services.multiplayer` `2.0.0` from Unity Registry) and **FishyUnityTransport** (`https://github.com/ooonush/FishyUnityTransport.git?path=Assets/FishNet/Plugins/FishyUnityTransport`).
 - Added `FishNet.Transporting.UTP.UnityTransport` to `NetworkManager` in `Pong.unity` with Port `7770`, and assigned `TransportManager.Transport` to `UnityTransport` (keeping `Tugboat` on `NetworkManager`, unused).
 - Verified with a local Development-build host (`Start Host`) and guest (`127.0.0.1:7770`): both connected over `UnityTransport` with zero errors (`[Host] This process is the server AND a client. RTT is 0 ms.`, guest assigned `RIGHT`, `2` paddles).
-- **Pending manual Unity Cloud setup:** `Edit > Project Settings > Services` still needs to be signed in with your Unity ID, linked to a cloud project, and **Relay** enabled on the Unity Cloud dashboard before live Relay codes can be generated.
+- Linked Unity Cloud project `Pong` (`cloudProjectId: f3a9208b-90bd-4111-8905-d1ffef83abaf`, organization `sgoktug34`) and enabled **Relay** in the Unity Cloud dashboard.
 
 ## Step 5 - `RelayLink.cs`
 
@@ -64,15 +64,18 @@ Updated `Pong/Assets/Scripts/Tools/ConnectionHud.cs` with `_joinCode`, `_relayCo
 - When both server and client are `Stopped` and `_relayBusy` is `false`, the HUD renders **Host via Relay**, the join-code text box, and **Join via Relay** (and hides connection buttons while `_relayBusy` is `true`).
 - Typing in the join-code field sets `ConnectionHud.EditingAddress` so `W`/`S`/`C`/`X`/`T`/`G` keys do not trigger while entering a code.
 - When `_relayCode` is non-empty and the server is `Started`, the HUD displays a large `JOIN CODE: <code>` label; clicking **Stop Host** (or **Stop Server**) clears `_relayCode = ""`.
-- Verified clean Unity 6000.3.2f1 compilation and full macOS Development build (`/private/tmp/PongQA.app`) with no compiler errors.
+- Verified live Unity Relay end-to-end between two processes on one Mac (`-pongProfile host` and `-pongProfile guest`): the host allocated Relay join code `8NLCF6` (`[Host] This process is the server AND a client. RTT is 0 ms.`), the guest joined via Relay as `client 2 / RIGHT`, and `LEFT served` replicated the active white ball (`inPlay = true`) to the guest window (`Client IN 1415 / OUT 460 B/s`).
 
-## Step 7 - Your partner, from another network (pending live Relay test)
+![Guest window connected via Unity Relay](../Pong/Captures/week06-relay-guest.png)
+*Guest window (`client 2 / RIGHT`) connected through live Unity Relay join code `8NLCF6` during an active serve.*
 
-> Link the Unity Cloud project (`Project Settings > Services`), enable **Relay** in the Unity Cloud dashboard, run `Host via Relay` / `Join via Relay` across two separate networks with a partner, capture a screenshot of the guest window showing the Relay RTT and score, and fill this card before pushing `Homework 3: done`.
+## Step 7 - Your partner, from another network (pending partner on second network)
+
+> Unity Cloud Relay is already linked and verified locally. Have your partner clone your repo (`unitybtw/dgd0005-siracsimsek`), join from a separate network (e.g. mobile hotspot) using `Join via Relay`, play to 3 points, capture a screenshot of the guest window showing the Relay RTT and score, and fill this card before pushing `Homework 3: done`.
 
 | Field | Value |
 |---|---|
-| Partner's name | Pending (requires linked Unity Cloud Relay) |
+| Partner's name | Pending (separate-network partner test) |
 | Who hosted, who joined | Pending |
 | The two networks | Pending |
 | Guest RTT through the Relay | Pending |
@@ -90,5 +93,5 @@ Updated `Pong/Assets/Scripts/Tools/ConnectionHud.cs` with `_joinCode`, `_relayCo
 - [x] Step 2: 1 s per-paddle serve rate limit + `[TargetRpc] TargetRefused` (`TOO FAST`) verified (`Homework 3: serve rate limit`).
 - [x] Step 3: host `C`, `X`, `T`, `G`, `Speed 40` verified; guest screenshot captured and questions answered (`Homework 3: host cheats work`).
 - [x] Step 4: `Multiplayer Services` + `FishyUnityTransport` installed, `UnityTransport` wired on Port 7770 (`Homework 3: UnityTransport`).
-- [x] Step 5 & 6: `RelayLink.cs` and `ConnectionHud.cs` Relay UI implemented and compiled cleanly (`Homework 3: join code`).
-- [ ] Step 7: link Unity Cloud Services + enable Relay in dashboard, play across two networks with a partner, attach guest RTT/score screenshot, and fill the connection card (`Homework 3: done`).
+- [x] Step 5 & 6: `RelayLink.cs` and `ConnectionHud.cs` Relay UI implemented, linked to Unity Cloud Relay, and verified live (`8NLCF6`) between host and guest (`Homework 3: join code`).
+- [ ] Step 7: play across two separate networks with a partner, attach the two-network guest RTT/score screenshot, and fill the connection card (`Homework 3: done`).

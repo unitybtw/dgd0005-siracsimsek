@@ -55,10 +55,26 @@ public class PongHomework2Probe : MonoBehaviour
             InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState());
             releaseFrame = 0;
         }
-        if (commands == null || !File.Exists(commands) || PaddleController.Local == null) return;
+        if (commands == null || !File.Exists(commands)) return;
         var c = JsonUtility.FromJson<Command>(File.ReadAllText(commands));
         if (c == null || c.id == lastCommand) return;
         lastCommand = c.id;
+        if (c.request == "relayHost")
+        {
+            _ = StartRelayHost(c.capturePath);
+            return;
+        }
+        if (c.request == "relayJoin" && !string.IsNullOrEmpty(c.capturePath))
+        {
+            _ = RelayLink.JoinAsync(InstanceFinder.NetworkManager, c.capturePath);
+            return;
+        }
+        if (c.request == "capture" && !string.IsNullOrEmpty(c.capturePath))
+        {
+            ScreenCapture.CaptureScreenshot(c.capturePath);
+            return;
+        }
+        if (PaddleController.Local == null) return;
         if (!string.IsNullOrEmpty(c.key) && Keyboard.current != null)
         {
             InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState((Key)Enum.Parse(typeof(Key), c.key)));
@@ -70,11 +86,6 @@ public class PongHomework2Probe : MonoBehaviour
             {
                 typeof(PaddleController).GetField("speed", BindingFlags.Instance | BindingFlags.NonPublic)
                     .SetValue(PaddleController.Local, c.axis);
-                return;
-            }
-            if (c.request == "capture" && !string.IsNullOrEmpty(c.capturePath))
-            {
-                ScreenCapture.CaptureScreenshot(c.capturePath);
                 return;
             }
             if (c.request == "pauseTickInput")
@@ -91,6 +102,12 @@ public class PongHomework2Probe : MonoBehaviour
             typeof(PaddleController).GetMethod("ServerSetAxis", BindingFlags.Instance | BindingFlags.NonPublic)
                 .Invoke(PaddleController.Local, new object[] { axis });
         }
+    }
+
+    private async System.Threading.Tasks.Task StartRelayHost(string codeFile)
+    {
+        string code = await RelayLink.HostAsync(InstanceFinder.NetworkManager);
+        if (!string.IsNullOrEmpty(codeFile)) File.WriteAllText(codeFile, code);
     }
 
     private void LateUpdate()
