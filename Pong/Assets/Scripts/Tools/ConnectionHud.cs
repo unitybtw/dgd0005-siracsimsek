@@ -16,6 +16,9 @@ public class ConnectionHud : MonoBehaviour
     private NetworkManager manager;
     private NetworkTrafficStatistics statistics;
     private string address = "127.0.0.1";
+    private string _joinCode = "";
+    private string _relayCode = "";
+    private bool _relayBusy;
     private double serverIn, serverOut, clientIn, clientOut;
     public double ServerOutBytesPerSecond => serverOut;
     private double si, so, ci, co;
@@ -82,46 +85,73 @@ public class ConnectionHud : MonoBehaviour
         GUI.enabled = !manager.IsClientStarted;
         address = GUILayout.TextField(address, 100);
         GUI.enabled = true;
-        EditingAddress = GUI.GetNameOfFocusedControl() == "HostAddress";
+        EditingAddress = GUI.GetNameOfFocusedControl() == "HostAddress" || GUI.GetNameOfFocusedControl() == "JoinCode";
         bool serverUp = manager.IsServerStarted;
         bool clientUp = manager.IsClientStarted;
         bool bothStopped = !serverUp && !clientUp;
         bool hostUp = serverUp && clientUp;
-        GUILayout.BeginHorizontal();
-        if (hostUp)
+        if (_relayBusy)
         {
-            if (GUILayout.Button("Stop Host", GUILayout.Height(32)))
-            {
-                GUI.FocusControl(null);
-                manager.ClientManager.StopConnection();
-                manager.ServerManager.StopConnection(true);
-            }
+            GUILayout.Label("Connecting via Relay...", body);
         }
         else
         {
-            if (GUILayout.Button(serverUp ? "Stop Server" : "Start Server", GUILayout.Height(32)))
+            GUILayout.BeginHorizontal();
+            if (hostUp)
             {
-                GUI.FocusControl(null);
-                if (serverUp) manager.ServerManager.StopConnection(true);
-                else manager.ServerManager.StartConnection();
+                if (GUILayout.Button("Stop Host", GUILayout.Height(32)))
+                {
+                    GUI.FocusControl(null);
+                    _relayCode = "";
+                    manager.ClientManager.StopConnection();
+                    manager.ServerManager.StopConnection(true);
+                }
             }
-            // One click, one process: the server starts first, then the local client joins it.
-            if (bothStopped && GUILayout.Button("Start Host", GUILayout.Height(32)))
+            else
             {
-                GUI.FocusControl(null);
-                manager.ServerManager.StartConnection();
-                ushort port = manager.TransportManager.Transport.GetPort();
-                if (port == 0) port = 7770;
-                manager.ClientManager.StartConnection("127.0.0.1", port);
+                if (GUILayout.Button(serverUp ? "Stop Server" : "Start Server", GUILayout.Height(32)))
+                {
+                    GUI.FocusControl(null);
+                    if (serverUp) { _relayCode = ""; manager.ServerManager.StopConnection(true); }
+                    else manager.ServerManager.StartConnection();
+                }
+                // One click, one process: the server starts first, then the local client joins it.
+                if (bothStopped && GUILayout.Button("Start Host", GUILayout.Height(32)))
+                {
+                    GUI.FocusControl(null);
+                    manager.ServerManager.StartConnection();
+                    ushort port = manager.TransportManager.Transport.GetPort();
+                    if (port == 0) port = 7770;
+                    manager.ClientManager.StartConnection("127.0.0.1", port);
+                }
+                if (GUILayout.Button(clientUp ? "Stop Client" : "Start Client", GUILayout.Height(32)))
+                {
+                    GUI.FocusControl(null);
+                    if (clientUp) manager.ClientManager.StopConnection();
+                    else { manager.TransportManager.Transport.SetClientAddress(address.Trim()); manager.ClientManager.StartConnection(); }
+                }
             }
-            if (GUILayout.Button(clientUp ? "Stop Client" : "Start Client", GUILayout.Height(32)))
+            GUILayout.EndHorizontal();
+            if (bothStopped)
             {
-                GUI.FocusControl(null);
-                if (clientUp) manager.ClientManager.StopConnection();
-                else { manager.TransportManager.Transport.SetClientAddress(address.Trim()); manager.ClientManager.StartConnection(); }
+                if (GUILayout.Button("Host via Relay", GUILayout.Height(28)))
+                {
+                    GUI.FocusControl(null);
+                    HostViaRelay();
+                }
+                GUILayout.BeginHorizontal();
+                GUI.SetNextControlName("JoinCode");
+                _joinCode = GUILayout.TextField(_joinCode, 12);
+                if (GUILayout.Button("Join via Relay", GUILayout.Height(24)))
+                {
+                    GUI.FocusControl(null);
+                    JoinViaRelay();
+                }
+                GUILayout.EndHorizontal();
             }
         }
-        GUILayout.EndHorizontal();
+        if (!string.IsNullOrEmpty(_relayCode) && serverUp)
+            GUILayout.Label($"JOIN CODE: {_relayCode}", title);
         var local = PaddleController.Local;
         GUILayout.Label(local == null ? "You: not connected" : $"You: client {local.Owner.ClientId} / {PaddleController.SideName(local.Side.Value)}", body);
         GUILayout.Label($"Paddles in All: {PaddleController.All.Count}", body);
@@ -136,6 +166,43 @@ public class ConnectionHud : MonoBehaviour
         if (Time.unscaledTime < flashUntil)
             GUI.Box(new Rect(Screen.width / scale / 2 - 240, 24, 480, 80), string.Join("\n", flashes), title);
         GUI.matrix = Matrix4x4.identity;
+    }
+    private async void HostViaRelay()
+    {
+        if (_relayBusy) return;
+        _relayBusy = true;
+        try
+        {
+            _relayCode = await RelayLink.HostAsync(manager);
+        }
+        catch (Exception ex)
+        {
+            _relayCode = "";
+            Debug.LogError($"[Relay] Host failed: {ex.Message}");
+            Flash("RELAY HOST FAILED");
+        }
+        finally
+        {
+            _relayBusy = false;
+        }
+    }
+    private async void JoinViaRelay()
+    {
+        if (_relayBusy) return;
+        _relayBusy = true;
+        try
+        {
+            await RelayLink.JoinAsync(manager, _joinCode);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"[Relay] Join failed: {ex.Message}");
+            Flash("RELAY JOIN FAILED");
+        }
+        finally
+        {
+            _relayBusy = false;
+        }
     }
     private void OnDestroy()
     {
