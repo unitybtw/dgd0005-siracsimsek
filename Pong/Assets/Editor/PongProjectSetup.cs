@@ -11,6 +11,7 @@ using FishNet.Managing.Timing;
 using FishNet.Managing.Transporting;
 using FishNet.Object;
 using FishNet.Transporting.Tugboat;
+using FishNet.Transporting.UTP;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -54,6 +55,27 @@ public static class PongProjectSetup
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
         AssetDatabase.SaveAssets();
         Debug.Log("[Pong] NetworkObject component references and scene IDs repaired.");
+    }
+    [MenuItem("Pong/Configure UnityTransport (Week 6)")]
+    public static void ConfigureUnityTransport()
+    {
+        if (Application.isPlaying) throw new System.InvalidOperationException("Stop Play Mode first.");
+        if (EditorSceneManager.GetActiveScene().path != "Assets/Scenes/Pong.unity")
+            EditorSceneManager.OpenScene("Assets/Scenes/Pong.unity");
+        var tm = Object.FindFirstObjectByType<TransportManager>();
+        if (tm == null) throw new System.InvalidOperationException("TransportManager missing in Pong.unity.");
+        var utp = tm.GetComponent<UnityTransport>();
+        if (utp == null) utp = tm.gameObject.AddComponent<UnityTransport>();
+        utp.SetConnectionData("127.0.0.1", 7770, string.Empty);
+        var serialized = new SerializedObject(tm);
+        serialized.FindProperty("Transport").objectReferenceValue = utp;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(utp);
+        EditorUtility.SetDirty(tm);
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+        AssetDatabase.SaveAssets();
+        Debug.Log("[Pong] UnityTransport configured on Port 7770 and assigned to TransportManager.");
     }
     static PongProjectSetup()
     {

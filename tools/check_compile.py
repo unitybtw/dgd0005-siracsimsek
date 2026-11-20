@@ -10,12 +10,15 @@ refs+=[unity/'Managed/Newtonsoft.Json.dll']
 refs+=list((root/'Pong/Assets/FishNet/Runtime/Plugins/CodeAnalysis').glob('FishNet.CodeAnalysis.dll'))
 cache=unity.parent/'PackageManager/ProjectTemplates/libcache/com.unity.template.3d-cross-platform-17.0.14/ScriptAssemblies'
 refs+=list(cache.glob('*.dll'))
+pkg_asm=root/'Pong/Library/ScriptAssemblies'
+if pkg_asm.exists():
+ refs+=[p for p in pkg_asm.glob('*.dll') if p.name.startswith(('Unity.Services.','Unity.Networking.','FishyUnityTransport'))]
 refs=[p for p in refs if p.name not in ['Assembly-CSharp.dll','Assembly-CSharp-Editor.dll'] and not (p.parent.name=='unity-4.8-api' and p.name.startswith('Unity'))]
 # Keep one reference for each assembly filename.
 refs=list({p.name:p for p in refs}.values())
 common=['-nologo','-target:library','-unsafe','-langversion:latest','-nostdlib+','-define:UNITY_2018_3_OR_NEWER,UNITY_EDITOR,UNITY_EDITOR_OSX,UNITY_STANDALONE_OSX,UNITY_6000_0_OR_NEWER,UNITY_2022_3_OR_NEWER,UNITY_2022_2_OR_NEWER,UNITY_2021_3_OR_NEWER,UNITY_2021_2_OR_NEWER,UNITY_2020_3_OR_NEWER']+['-r:'+str(p) for p in refs]
 def compile(name,sources,extra=[], editor=True):
- rsp=tmp/(name+'.rsp');out=tmp/(name+'.dll')
+ rsp=tmp/(name+'.rsp');out=tmp/(('FishNet.Runtime.dll' if name=='FishNetStatic' else name+'.dll'))
  args=common if editor else [a for a in common if not a.startswith('-define:')]
  rsp.write_text('\n'.join('"'+arg+'"' for arg in args+['-out:'+str(out)]+extra+[str(s) for s in sources]))
  result=subprocess.run([str(unity/'NetCoreRuntime/dotnet'),str(unity/'DotNetSdkRoslyn/csc.dll'),'@'+str(rsp)],text=True,capture_output=True)
