@@ -1,36 +1,46 @@
-# Pong - Week 4 server-authoritative multiplayer assignment
+# Pong - Week 6 listen-host, cheats & Unity Relay assignment
 
-Unity **6000.3.2f1**, Universal 3D, FishNet's official **4.7.3** tag (release title **4.7.3R**), Tugboat UDP **7770**, tick rate **30**. No Mirror or Unity Netcode.
+Unity **6000.3.2f1**, Universal 3D, FishNet's official **4.7.3** tag (release title **4.7.3R**), **FishyUnityTransport** (`UnityTransport` on UDP **7770**, with `Tugboat` retained unused) + **Unity Relay**, tick rate **30**. No Mirror or Unity Netcode.
 
-Each player owns one spawned paddle and sends only an input axis to its owner-only ServerRpc at 30 Hz. The server rejects NaN and spectator input, clamps the axis to [-1, 1], accepts at most one input per paddle inside a 30 ms window, and moves/clamps the paddle at 8 units/s. Paddle and ball NetworkTransforms both have Client Authoritative off and send the server's position back to everybody, including the owner. The server also decides ball simulation, serve and score; extra clients spectate.
+Each player owns one spawned paddle and sends only an input axis to its owner-only ServerRpc at 30 Hz. The server rejects NaN and spectator input, clamps the axis to [-1, 1], accepts at most one input per paddle inside a 30 ms window, enforces a 1 s serve rate limit (`TOO FAST` `TargetRpc` refusal), and moves/clamps the paddle at 8 units/s. Paddle and ball NetworkTransforms both have Client Authoritative off and send the server's position back to everybody, including the owner. The server also decides ball simulation, serve and score; extra clients spectate.
 
-**Homework 2:** [Week04/README.md](Week04/README.md) contains the Step 3/4/5 answers, real C/X/T measurements, server Console capture, two vocabulary words and lecture self-review. Evidence is in `verification/week04/`. C sends 20 inputs, X sends 50, and T teleports the local visual copy in a separate client. Debug keys stay in the project. T does not run in a listen host, which shares the trusted server transform.
+**Homework 3 (Week 6):** [Week06/README.md](Week06/README.md) covers guest vs. host cheats (`C`, `X`, `T`, `G` score edit, `Speed 40`), the 1 s per-paddle serve rate limit (`TargetRefused`), `UnityTransport` + `RelayLink.cs`, `Host via Relay` / `Join via Relay` join codes, and the two-network Relay connection card with Can (Home Wi-Fi ↔ School network).
 
-**Week 5:** [Week05/README.md](Week05/README.md) adds the listen-host path: one **Start Host** click starts the server and joins it as client 0, **Stop Host** stops the client then the server, `ConnectionLogger` prints the `[Host]` line, and the HUD shows `Paddles in All` so the duplicate-registration bug is visible. The one-machine host/guest evidence, the 10 Hz comparison and the self-review answers are in that file; the physical two-laptop connection card is still pending.
+**Week 5:** [Week05/README.md](Week05/README.md) adds the listen-host path: one **Start Host** click starts the server and joins it as client 0, **Stop Host** stops the client then the server, `ConnectionLogger` prints the `[Host]` line, and the HUD shows `Paddles in All` so the duplicate-registration bug is visible.
+
+**Homework 2:** [Week04/README.md](Week04/README.md) contains the Step 3/4/5 answers, real C/X/T measurements, server Console capture, two vocabulary words and lecture self-review. Evidence is in `verification/week04/`.
 
 ## Run server and client (three lines)
 
 1. In Unity Hub, add `Pong/`, select 6000.3.2f1, open it, let packages/scripts import, then open `Assets/Scenes/Pong.unity`.
-2. Press Play on the server laptop, click **Start Server**, then **Start Client**; its first client receives LEFT.
-3. On the guest laptop open the same scene, press Play, enter the server's hotspot IP and click **Start Client**; move with W/S or arrows and press Space on your serve.
+2. Press Play on the host laptop and click **Start Host** (local/LAN) or **Host via Relay** (prints a 6-character `JOIN CODE`); host receives LEFT.
+3. On the guest laptop open the same scene, press Play, enter the host IP + **Start Client** (or enter the Relay code + **Join via Relay**); move with W/S or arrows and press Space on your serve.
 
 Two active players are required to serve. The ball starts grey; the LEFT player serves first. A goal gives the conceding side the next serve. Disconnecting a player pauses the rally and preserves the score while the server remains running. Reconnecting claims the first free side; existing spectators remain spectators.
 
 ## Project contents
 
 - `Pong/Assets/Scripts/Starter/`: the supplied local game; the original `Starter 2/` files remain untouched. The project copy of Court uses a shared material/property block to avoid allocating a material for every repaint.
-- `Pong/Assets/Scripts/Network/`: ConnectionLogger, PaddleController, NetworkBall, BallSpawner and GameState.
-- `Pong/Assets/Scripts/Tools/`: replacement ConnectionHud and ServerBootstrap, because the course Tools folder was not supplied.
+- `Pong/Assets/Scripts/Network/`: ConnectionLogger, PaddleController, NetworkBall, BallSpawner, GameState and RelayLink.
+- `Pong/Assets/Scripts/Tools/`: replacement ConnectionHud (with Start Host / Stop Host and Relay join-code UI) and ServerBootstrap, because the course Tools folder was not supplied.
 - `Pong/Assets/Editor/PongProjectSetup.cs`: creates the local and network scenes, paddle/ball prefabs, manager, references and build scene on first successful Editor import. The menu **Pong > Create missing scenes and prefabs** can also run it. It preserves an existing Pong scene.
-- `Week04/README.md`: current Homework 2 answers, measurements, screenshots and run instructions.
+- `Week06/README.md`: Homework 3 (Week 6) host/guest cheat experiments, serve rate limit, `UnityTransport` + `RelayLink.cs`, Relay join code verification and connection card.
 - `Week05/README.md`: Week 5 listen-host steps, real host/guest and 10 Hz evidence, connection card and self-review.
+- `Week04/README.md`: current Homework 2 answers, measurements, screenshots and run instructions.
 - `Week03/README.md`: historical Homework 1 answers and remaining physical-network measurement cards.
 - `PLAN.md`: the full implementation, validation and hand-in plan in Turkish.
 - `verification/`: static compiler evidence and remaining validation scope.
 
 ## Visual Evidence & In-Game Captures
 
-The following captures demonstrate real runtime states during local verification on Unity 6000.3.2f1:
+The following captures demonstrate real runtime states during verification on Unity 6000.3.2f1:
+
+### Week 6 — Host Cheats & Live Unity Relay
+![Guest Window After Host Cheats G and T](Pong/Captures/week06-guest-host-cheats.png)
+*Guest window (`client 1 / RIGHT`) showing `LEFT 9 : 0 RIGHT` after the host pressed `G` and the host's blue paddle staying at the ball (`x = 0`) after the host pressed `T`.*
+
+![Guest Window Connected via Unity Relay](Pong/Captures/week06-relay-guest.png)
+*Guest window (`client 2 / RIGHT`) connected through live Unity Relay join code `8NLCF6` during an active serve.*
 
 ### 1. Active In-Flight Rally & Network Traffic Monitoring
 ![Active Rally and Network Traffic Verification](Pong/Captures/pong-traffic-verified.png)
@@ -78,7 +88,7 @@ Every gameplay mechanic, network flow, and replication feature required by the h
 
 ## Dependencies and source
 
-FishNet is vendored under `Pong/Assets/FishNet/` from [the official 4.7.3 tag](https://github.com/FirstGearGames/FishNet/tree/4.7.3). Its upstream package metadata and FISHNET_VERSION constant still say 4.7.2; they have been left unchanged. The release title is [4.7.3R](https://github.com/FirstGearGames/FishNet/releases/tag/4.7.3). Its included license files apply. Unity packages are pinned in `Packages/manifest.json`, including Multiplayer Play Mode 2.0.2, Input System 1.20.1 and URP 17.3.0.
+FishNet is vendored under `Pong/Assets/FishNet/` from [the official 4.7.3 tag](https://github.com/FirstGearGames/FishNet/tree/4.7.3). Its upstream package metadata and FISHNET_VERSION constant still say 4.7.2; they have been left unchanged. The release title is [4.7.3R](https://github.com/FirstGearGames/FishNet/releases/tag/4.7.3). Its included license files apply. Unity packages are pinned in `Packages/manifest.json`, including Multiplayer Play Mode 2.0.2, Multiplayer Services 2.0.0, FishyUnityTransport, Input System 1.20.1 and URP 17.3.0.
 
 Week 3 originally used client-authoritative paddles. Homework 2 replaces that authority with the server input path described above. The old 10/30/60 Hz measurements remain historical Week 3 evidence; they are not measurements of the current input RPCs and forced idle snapshots. The required two-laptop/hotspot work from Week 3 still needs physical hardware.
 
